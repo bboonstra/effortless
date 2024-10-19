@@ -7,9 +7,7 @@ on: [push]
 jobs:
   publish:
     runs-on: ubuntu-latest
-    if: >-
-      contains(github.event.head_commit.message, '[release]') &&
-      contains(fromJson(${{ vars.ALLOWED_PUBLISHERS }}), github.actor)
+    if: (contains(github.event.head_commit.message, '[release]') && contains(fromJson(${{ vars.ALLOWED_PUBLISHERS }}), github.actor))
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python
