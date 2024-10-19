@@ -5,10 +5,10 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' || contains(github.ref, '[test]')
+    if: github.event_name == 'pull_request' || contains(github.event.head_commit.message, '[test]')
     strategy:
       matrix:
-        python-version: [3.6, 3.9, 3.12]
+        python-version: [3.9, 3.12]
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python
@@ -18,4 +18,4 @@ jobs:
       - name: Install dependencies
         run: pip install -e .
       - name: Run tests
-        run: python -m unittest discover -s Effortless/tests
+        run: python -m unittest discover -s tests
