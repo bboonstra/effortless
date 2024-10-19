@@ -1,0 +1,30 @@
+# .github/workflows/publish.yml
+
+name: Publish Package
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "release*"
+      - "publish"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.x"
+      - name: Install dependencies
+        run: pip install build twine
+      - name: Build package
+        run: python -m build
+      - name: Publish to PyPI
+        run: twine upload dist/*
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
