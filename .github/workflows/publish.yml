@@ -4,8 +4,6 @@ name: Publish Package
 
 on:
   push:
-    branches:
-      - main
     tags:
       - "release*"
       - "publish"
