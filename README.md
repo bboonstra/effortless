@@ -8,6 +8,7 @@ It's perfect for beginners, but effortless for anyone.
 
 ## Quickstart
 
+You can install Effortless easily, if you have [pip](https://pip.pypa.io/en/stable/installation/) installed.
 ```bash
 pip install effortless
 ```
