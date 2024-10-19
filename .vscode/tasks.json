@@ -4,7 +4,7 @@
         {
             "label": "Begin an interactive Effortless session",
             "type": "shell",
-            "command": "python3 -i -c 'import effortless as db'",
+            "command": "python3 -i -c 'from effortless import db, Effortless'",
             "group": {
                 "kind": "build",
                 "isDefault": true

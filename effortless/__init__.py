@@ -1,4 +1,4 @@
 # effortless/__init__.py
-from .effortless import set, get
+from .effortless import Effortless, db
 
-__all__ = ["set", "get"]
+__all__ = ['Effortless', 'db']
