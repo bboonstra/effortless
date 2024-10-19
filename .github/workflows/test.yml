@@ -8,7 +8,7 @@ jobs:
     if: github.event_name == 'pull_request' || contains(github.event.head_commit.message, '[test]')
     strategy:
       matrix:
-        python-version: [3.9, 3.12]
+        python-version: [3.6, 3.9, 3.12]
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python
