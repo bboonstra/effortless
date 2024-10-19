@@ -18,5 +18,5 @@ pip install effortless
 import effortless as db
 db.set("test")
 print(db.get())
-test
+"test"
 ```
