@@ -8,7 +8,9 @@ It's perfect for beginners, but effortless for anyone.
 
 ## Quickstart
 
-You can install Effortless easily, if you have [pip](https://pip.pypa.io/en/stable/installation/) and [Python 3.9 or higher](https://www.python.org/downloads/) installed.
+You can install Effortless easily, if you have
+[pip](https://pip.pypa.io/en/stable/installation/) and
+[Python 3.9 or higher](https://www.python.org/downloads/) installed.
 
 ```bash
 pip install effortless
@@ -100,30 +102,30 @@ print(db.get_all())  # Output: {}
 Not only is storing, retrieving, and managing data is as simple is it can be,
 Effortless is also:
 
-### - Cross platform
+- ### Everywhere
 
-Effortless DBs work on any device supporting Python and DBs can be copied across
+    Effortless DBs work on any device supporting Python and DBs can be copied across
 devices.
 
-### - Safe
+- ### Safe
 
-All DB data is safe, lossless, local, and recoverable by default.
+    All DB data is safe, lossless, local, and recoverable by default.
 
-### - Scaling
+- ### Scaling
 
-Our DBs have deep code support for batch functions.
+    Our DBs have deep code support for batch functions.
 
-### - Clear
+- ### Clear
 
-We take pride in our documentation, so that learning takes minimal effort.
+    We take pride in our documentation, so that learning takes minimal effort.
 
 - ### Broad
 
-All that's required to use Effortless is Python >= 3.9.
+    All that's required to use Effortless is Python >= 3.9.
 
-### - Compact
+- ### Compact
 
-Our code is compact, both in package size, dependencies, and db size.
+    Our code is compact, both in package size, dependencies, and db size.
 
 [![Lines of Code](https://img.shields.io/github/languages/code-size/bboonstra/Effortless)](https://github.com/bboonstra/Effortless)
 [![Package Size](https://img.shields.io/github/repo-size/bboonstra/Effortless)](https://github.com/bboonstra/Effortless)
@@ -133,5 +135,5 @@ Our code is compact, both in package size, dependencies, and db size.
 
 ## Contributing
 
-Writing code takes a lot of effort! Check out [CONTRIBUTING.md](CONTRIBUTING.md)
+Writing code takes a lot of effort! Check out [CONTRIBUTING](CONTRIBUTING.md)
 for information.
