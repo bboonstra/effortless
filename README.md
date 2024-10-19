@@ -20,3 +20,6 @@ db.set("test")
 print(db.get())
 "test"
 ```
+
+## Contributing
+Writing code takes a lot of effort! Check out [CONTRIBUTING.md](CONTRIBUTING.md) for information.
