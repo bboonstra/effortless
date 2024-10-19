@@ -2,27 +2,25 @@
 
 name: Publish Package
 
-on:
-  push:
-    tags:
-      - "release*"
-      - "publish"
+on: [push]
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    if: "contains(lower(github.ref), '[release]')"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: "3.x"
       - name: Install dependencies
-        run: pip install build twine
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine
       - name: Build package
         run: python -m build
       - name: Publish to PyPI
-        run: twine upload dist/*
-        env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
