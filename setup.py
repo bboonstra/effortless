@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="Effortless",
-    version="0.0.2",
+    version="0.0.3",
     packages=find_packages(),
     description="Databases should be Effortless.",
     long_description=open("README.md").read(),
@@ -17,7 +17,7 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires=">=3.6",
+    python_requires=">=3.9",
     install_requires=[],
     keywords="database, effortless, simple storage, beginner, easy, db",
     project_urls={
