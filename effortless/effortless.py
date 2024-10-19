@@ -1,5 +1,4 @@
 # effortlessdb/effortless.py
-
 import json
 import os
 
