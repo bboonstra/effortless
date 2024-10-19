@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' || ((contains(github.ref, '[test]') || contains(github.ref, '[TEST]')))
+    if: github.event_name == 'pull_request' || contains(github.ref, '[test]')
     strategy:
       matrix:
         python-version: [3.6, 3.9, 3.12]
