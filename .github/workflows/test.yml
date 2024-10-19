@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' || contains(github.event.head_commit.message, '[test]')
+    if: github.event_name == 'pull_request' || contains(github.event.head_commit.message, '[test]') || contains(github.event.head_commit.message, '[release]')
     strategy:
       matrix:
         python-version: [3.6, 3.9, 3.12]
