@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="Effortless",
-    version="0.0.1",
+    version="0.0.2",
     packages=find_packages(),
     description="Databases should be Effortless.",
     long_description=open("README.md").read(),
@@ -23,5 +23,7 @@ setup(
     project_urls={
         "Bug Tracker": "https://github.com/bboonstra/Effortless/issues",
         "Documentation": "https://github.com/bboonstra/Effortless",
+        "Source Code": "https://github.com/bboonstra/Effortless",
     },
+    include_package_data=True,
 )
