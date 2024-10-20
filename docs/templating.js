@@ -3,8 +3,8 @@ document.addEventListener("DOMContentLoaded", function () {
         <nav>
             <button id="sidebarToggle">☰</button>
             <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="/docs/">Documentation</a></li>
+                <li><a href="./">Home</a></li>
+                <li><a href="./docs/">Documentation</a></li>
                 <li><a href="https://pypi.org/project/Effortless/">PyPI</a></li>
                 <li><a href="https://github.com/bboonstra/Effortless">GitHub</a></li>
             </ul>
