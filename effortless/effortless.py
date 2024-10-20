@@ -29,6 +29,7 @@ class EffortlessDB:
         self.set_storage(db_name)
         self._autoconfigure()
         self._operation_count = 0
+        self._backup_thread = None
 
     @staticmethod
     def default_db():
@@ -374,9 +375,37 @@ class EffortlessDB:
         self._operation_count += 1
         if self.config.backup and self._operation_count >= self.config.backup_interval:
             self._operation_count = 0
-            threading.Thread(target=self._backup).start()
 
-    def _backup(self) -> None:
+            # If a backup thread is already running, we can stop it
+            if self._backup_thread and self._backup_thread.is_alive():
+                self._backup_thread.join(timeout=0)  # Non-blocking join
+                if self._backup_thread.is_alive() and self.config.debug:
+                    logger.debug("Previous backup thread is alive and not stopping")
+
+            # Start a new backup thread
+            self._backup_thread = threading.Thread(target=self._backup)
+            self._backup_thread.start()
+
+    def finish_backup(self, timeout: float = None) -> bool:
+        """
+        Wait for any ongoing backup operation to complete.
+
+        This method blocks until the current backup thread (if any) has finished.
+
+        Args:
+            timeout (float, optional): Maximum time to wait for the backup to complete, in seconds.
+                                       If None, wait indefinitely. Defaults to None.
+
+        Returns:
+            bool: True if the backup completed (or there was no backup running),
+                  False if the timeout was reached before the backup completed.
+        """
+        if self._backup_thread and self._backup_thread.is_alive():
+            self._backup_thread.join(timeout)
+            return not self._backup_thread.is_alive()
+        return True
+
+    def _backup(self) -> bool:
         """
         Perform a database backup.
 
@@ -388,13 +417,23 @@ class EffortlessDB:
         """
         if self.config.backup:
             try:
+                # Check if backup directory is valid
+                if not os.path.exists(self.config.backup) or not os.access(
+                    self.config.backup, os.W_OK
+                ):
+                    raise IOError(
+                        f"Backup directory {self.config.backup} is not writable or does not exist."
+                    )
+
                 backup_path = os.path.join(
                     self.config.backup, os.path.basename(self._storage_file)
                 )
                 shutil.copy2(self._storage_file, backup_path)
                 logger.debug(f"Database backed up to {backup_path}")
+                return True  # Indicate success
             except IOError as e:
                 logger.error(f"Backup failed: {str(e)}")
+                return False  # Indicate failure
 
     def _compress_data(self, data: Dict[str, Any]) -> str:
         """

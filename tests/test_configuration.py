@@ -1,6 +1,7 @@
 import unittest
 import tempfile
 import shutil
+import os
 from effortless import EffortlessDB, EffortlessConfig
 
 
@@ -65,10 +66,10 @@ class TestConfiguration(unittest.TestCase):
     def test_max_size_limit(self):
         self.db.wipe()
         self.db.configure(EffortlessConfig({"ms": 0.001}))  # Set max size to 1 KB
-        
+
         # This should work
         self.db.add({"small": "data"})
-        
+
         # This should raise an error
         large_data = {"large": "x" * 1000}  # Approximately 1 KB
         with self.assertRaises(ValueError):
@@ -102,6 +103,40 @@ class TestConfiguration(unittest.TestCase):
             EffortlessConfig({"v": 0})
         with self.assertRaises(ValueError):
             EffortlessConfig({"bpi": 0})
+
+    def test_backup_interval(self):
+        # Configure the database with a backup path
+        backup_path = tempfile.mkdtemp()  # Create a temporary directory for backups
+        new_config = {
+            "dbg": True,
+            "bp": backup_path,  # Set backup path
+            "bpi": 1,  # Backup after every operation
+        }
+        self.db.configure(EffortlessConfig(new_config))
+
+        # Assert that the backup path is properly configured
+        self.assertEqual(self.db.config.backup, backup_path)
+
+        # Add an item to trigger a backup
+        self.db.add({"name": "Alice", "age": 30})
+
+        backup_file = os.path.join(backup_path, "test_db.effortless")
+        self.assertFalse(
+            os.path.exists(backup_file),
+            "DB should not be backed up after 1 operation if bpi == 2.",
+        )
+
+        # Add another item to trigger a backup again
+        self.db.add({"name": "Bob", "age": 25})
+
+        # Check if the backup file still exists and has been updated
+        self.assertTrue(
+            os.path.exists(backup_file),
+            "Backup file should still exist after adding the second item.",
+        )
+
+        # Clean up the backup directory
+        shutil.rmtree(backup_path)
 
 
 if __name__ == "__main__":

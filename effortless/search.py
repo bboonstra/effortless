@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Callable, Union, Tuple, List
+from typing import Callable, Union, Tuple, List, Type
 import re
 from datetime import datetime
 from difflib import SequenceMatcher
@@ -73,6 +73,7 @@ class Query(BaseQuery):
         """
         if callable(condition_or_field):
             self.condition = condition_or_field
+            self.field = None
         else:
             self.field = condition_or_field
             self.condition = None
@@ -315,8 +316,19 @@ class Query(BaseQuery):
             TypeError: If start_date or end_date is not a datetime object.
             ValueError: If start_date is after end_date.
         """
-        if not isinstance(start_date, datetime) or not isinstance(end_date, datetime):
-            raise TypeError("Start and end dates must be datetime objects")
+        def to_datetime(date):
+            if isinstance(date, str):
+                try:
+                    return datetime.fromisoformat(date)
+                except ValueError:
+                    raise ValueError(f"Invalid date format: {date}")
+            elif isinstance(date, datetime):
+                return date
+            else:
+                raise TypeError(f"Date must be a string or datetime object, not {type(date)}")
+
+        start_date = to_datetime(start_date)
+        end_date = to_datetime(end_date)
         if start_date > end_date:
             raise ValueError("Start date must be before or equal to end date")
 
@@ -355,6 +367,48 @@ class Query(BaseQuery):
         def condition(item):
             field_value = str(self._get_nested_value(item, self.field))
             return SequenceMatcher(None, field_value, value).ratio() >= threshold
+
+        self.condition = lambda item: self._validate_field(item) and condition(item)
+        return self
+
+    def passes(self, func):
+        """
+        Create a condition that checks if the field passes the given function.
+
+        Args:
+            func (callable): A function that takes the field value and returns a boolean.
+
+        Returns:
+            Query: This query object with the new condition.
+        """
+
+        def condition(item):
+            field_value = self._get_nested_value(item, self.field)
+            try:
+                return func(field_value)
+            except Exception as e:
+                func_name = getattr(func, "__name__", "unnamed function")
+                raise ValueError(
+                    f"Error checking condition '{func_name}': {str(e)}"
+                ) from e
+
+        self.condition = lambda item: self._validate_field(item) and condition(item)
+        return self
+
+    def is_type(self, expected_type: Type):
+        """
+        Create a condition that checks if the field is of the expected type.
+
+        Args:
+            expected_type (Type): The expected type of the field.
+
+        Returns:
+            Query: This query object with the new condition.
+        """
+
+        def condition(item):
+            field_value = self._get_nested_value(item, self.field)
+            return isinstance(field_value, expected_type)
 
         self.condition = lambda item: self._validate_field(item) and condition(item)
         return self

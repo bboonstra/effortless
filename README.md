@@ -101,7 +101,7 @@ db.add({"Anything": "will not work"}) # Raises an error
 
 ## New Filtering Capabilities
 
-Effortless 1.1.0 introduces powerful filtering capabilities using the `Field` class:
+Effortless 1.1 introduces powerful filtering capabilities using the `Field` class:
 
 - `equals`: Exact match
 - `contains`: Check if a value is in a string or list
@@ -110,6 +110,8 @@ Effortless 1.1.0 introduces powerful filtering capabilities using the `Field` cl
 - `matches_regex`: Regular expression matching
 - `between_dates`: Date range filtering
 - `fuzzy_match`: Approximate string matching
+- `passes`: Apply a custom function to filter items
+- `is_type`: Check the type of a field
 
 You can combine these filters using `&` (AND) and `|` (OR) operators for complex queries.
 
@@ -120,13 +122,19 @@ result = db.filter(
 )
 ```
 
-For even more flexibility, you can use the `Query` class with a custom lambda function:
+For even more flexibility, you can use the `passes` method with a custom function:
 
 ```python
-from effortless import Query
+def is_experienced(skills):
+    return len(skills) > 3
 
-custom_query = Query(lambda item: len(item["name"]) > 5 and item["age"] % 2 == 0)
-result = db.filter(custom_query)
+result = db.filter(Field("skills").passes(is_experienced))
+```
+
+You can also check the type of a field:
+
+```python
+result = db.filter(Field("age").is_type(int))
 ```
 
 These new filtering capabilities make Effortless more powerful while maintaining its simplicity and ease of use.
