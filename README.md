@@ -50,10 +50,10 @@ print(db.get_all())  # Output: {}
 ### Basic Usage
 
 ```python
-from effortless import Effortless
+from effortless import EffortlessDB
 
 # Create a new Effortless instance
-db = Effortless()
+db = EffortlessDB()
 
 # Add items to the database
 db.add({"name": "Charlie", "age": 35})
@@ -72,10 +72,10 @@ print(all_items)
 ### Advanced Usage
 
 ```python
-from effortless import Effortless
+from effortless import EffortlessDB, EffortlessConfig
 
 # Create a new Effortless instance with a custom directory
-db = Effortless("advanced_db")
+db = EffortlessDB("advanced_db")
 db.set_directory("/path/to/custom/directory")
 
 # Add multiple items
@@ -90,10 +90,16 @@ print(python_devs)
 #          '3': {'id': 3, 'name': 'Grace', 'skills': ['Python', 'Ruby']}}
 
 # Update configuration
-db.configure({"index_fields": ["id", "name"]})
+new_config = EffortlessConfig()
+new_config.readonly = True
+db.configure(new_config)
+
+# Test this configuration
+db.add({})
+# Output: ValueError: Database is in read-only mode
 
 # Wipe the database
-db.wipe()
+db.wipe(wipe_readonly=True)
 print(db.get_all())  # Output: {}
 ```
 

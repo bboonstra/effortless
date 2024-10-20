@@ -1,8 +1,7 @@
 import shutil
 import tempfile
 import unittest
-from effortless import db
-from effortless.effortless import DEFAULT_CONFIGURATION
+from effortless import db, EffortlessConfig, EffortlessDB
 
 
 class TestEffortlessUsage(unittest.TestCase):
@@ -17,7 +16,7 @@ class TestEffortlessUsage(unittest.TestCase):
 
     def test_set_directory(self):
         with self.assertRaises(TypeError):
-            db.set_directory(123)
+            db.set_directory(123) # type: ignore
         with self.assertRaises(ValueError):
             db.set_directory("")
         with self.assertRaises(ValueError):
@@ -30,7 +29,7 @@ class TestEffortlessUsage(unittest.TestCase):
 
     def test_set_storage(self):
         with self.assertRaises(TypeError):
-            db.set_storage(123)
+            db.set_storage(123) # type: ignore
         with self.assertRaises(ValueError):
             db.set_storage("")
         with self.assertRaises(ValueError):
@@ -45,10 +44,10 @@ class TestEffortlessUsage(unittest.TestCase):
         db.add({"id": 2, "name": "Bob"})
 
         result = db.search({"name": "Alice"})
-        self.assertEqual(result, {'1': {'id': 1, 'name': 'Alice'}})
+        self.assertEqual(result, {"1": {"id": 1, "name": "Alice"}})
 
         result = db.search({"id": 2})
-        self.assertEqual(result, {'2': {'id': 2, 'name': 'Bob'}})
+        self.assertEqual(result, {"2": {"id": 2, "name": "Bob"}})
 
         result = db.search({"name": "Charlie"})
         self.assertEqual(result, {})
@@ -57,9 +56,7 @@ class TestEffortlessUsage(unittest.TestCase):
         db.wipe()
         db.add({"id": 1, "name": "Alice"})
         data = db.get_all()
-        self.assertEqual(
-            data, {"1": {"id": 1, "name": "Alice"}}
-        )
+        self.assertEqual(data, {"1": {"id": 1, "name": "Alice"}})
 
         db.add({"id": 2, "name": "Bob"})
         data = db.get_all()
@@ -85,17 +82,17 @@ class TestEffortlessUsage(unittest.TestCase):
         )
 
         with self.assertRaises(TypeError):
-            db.add("invalid")
+            db.add("invalid")  # type: ignore
 
     def test_wipe(self):
         db.add({"test": True})
         db.wipe()
-        self.assertEqual(db._read_db(), {"0": DEFAULT_CONFIGURATION})
+        self.assertEqual(db._read_db(), EffortlessDB.default_db())
 
     def test_read_write_db(self):
         test_data = {
-            "0": DEFAULT_CONFIGURATION,
-            "1": {"test": True, "nested": {"key": "value"}},
+            "headers": EffortlessConfig().to_dict(),
+            "content": {"test": True, "nested": {"key": "value"}},
         }
         db._write_db(test_data)
         read_data = db._read_db()
@@ -103,7 +100,8 @@ class TestEffortlessUsage(unittest.TestCase):
 
     def test_non_existent_db(self):
         db.set_storage("non_existent")
-        self.assertEqual(db._read_db(), {"0": DEFAULT_CONFIGURATION})
+        self.assertEqual(db._read_db(), EffortlessDB.default_db())
+
 
 if __name__ == "__main__":
     unittest.main()

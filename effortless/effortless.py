@@ -1,16 +1,69 @@
 # effortlessdb/effortless.py
 import json
 import os
-from typing import Any, Dict
+import logging
+from typing import Any, Dict, List, Optional
+import zlib
+import base64
+import threading
+import shutil
+
+logger = logging.getLogger(__name__)
 
 
-DEFAULT_CONFIGURATION = {"v": 1}
+class EffortlessConfig:
+    def __init__(self, config: Dict[str, Any] = {}):
+        self.debug: bool = config.get("dbg", False)
+        self.requires: List[str] = config.get("rq", [])
+        self.max_size: Optional[int] = config.get("ms")
+        self.v: int = 1
+        self.backup: Optional[str] = config.get("bp")
+        self.backup_interval: int = config.get("bpi", 1)
+        self.encrypted: bool = config.get("enc", False)
+        self.compressed: bool = config.get("cmp", False)
+        self.readonly: bool = config.get("ro", False)
+
+        self._validate()
+
+    def _validate(self) -> None:
+        """Validate the configuration values."""
+        if self.max_size is not None and self.max_size <= 0:
+            raise ValueError("max_size must be a positive integer")
+        if self.v <= 0:
+            raise ValueError("Version must be a positive integer")
+        if self.backup_interval <= 0:
+            raise ValueError("Backup interval must be a positive integer")
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "dbg": self.debug,
+            "rq": self.requires,
+            "ms": self.max_size,
+            "v": self.v,
+            "bp": self.backup,
+            "bpi": self.backup_interval,
+            "enc": self.encrypted,
+            "cmp": self.compressed,
+            "ro": self.readonly,
+        }
+
+    @staticmethod
+    def default_headers():
+        return {"headers": EffortlessConfig().to_dict()}
 
 
-class Effortless:
+class EffortlessDB:
     def __init__(self, db_name: str = "db"):
+        self.config = EffortlessConfig()
         self.set_storage(db_name)
-        self._ensure_configuration()
+        self._autoconfigure()
+        self._operation_count = 0
+
+    @staticmethod
+    def default_db():
+        ddb = EffortlessConfig.default_headers()
+        ddb["content"] = {}
+        return ddb
 
     def set_directory(self, directory: str) -> None:
         """
@@ -73,40 +126,41 @@ class Effortless:
         else:
             self._storage_file = self._storage_filename
 
-        # Create the database file if it doesn't exist
-        if not os.path.exists(self._storage_file):
-            self._create_db()
+        self._autoconfigure()  # configure EffortlessConfig to the new file's configuration
 
-    def _ensure_configuration(self) -> None:
-        """Ensure the database has a configuration."""
+    def _autoconfigure(self) -> None:
+        """Ensures the database has a configuration in the headers."""
         data = self._read_db()
-        if not data:
-            data = {"0": DEFAULT_CONFIGURATION}
-        elif "0" not in data or "v" not in data["0"]:
-            data["0"] = DEFAULT_CONFIGURATION
-        self._write_db(data)
+        if "v" not in data["headers"]:
+            self.config = EffortlessConfig()
+            data["headers"] = self.config.to_dict()
+            self._write_db(data)
+        self._update_config()
 
-    def configure(self, config: Dict[str, Any]) -> None:
+    def _update_config(self):
+        self.config = EffortlessConfig(self._read_db()["headers"])
+
+    def configure(self, new_config: EffortlessConfig) -> None:
         """Update the database configuration."""
-        if not isinstance(config, dict):
-            raise TypeError("Configuration must be a dictionary")
+        if not isinstance(new_config, EffortlessConfig):
+            raise TypeError("New configuration must be an EffortlessConfig object")
+
         data = self._read_db()
-        data["0"].update(config)
-        self._write_db(data)
+        self.config = new_config
+        content = data["content"]
+
+        data = {"headers": new_config.to_dict(), "content": content}
+        self._write_db(data, write_in_readonly=True)
+        self._update_config()
 
     def get_all(self) -> Dict[str, Dict[str, Any]]:
         """Return all records in the database, excluding configuration."""
-        return self._get_user_data()
-
-    def _get_user_data(self) -> Dict[str, Dict[str, Any]]:
-        """Retrieve only user data from the database."""
-        data = self._read_db()
-        return {key: value for key, value in data.items() if key != "0"}
+        return self._read_db()["content"]
 
     def search(self, query: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
         """Search the database for items matching the query."""
         results = {}
-        for key, item in self._get_user_data().items():
+        for key, item in self._read_db()["content"].items():
             if all(self._match_item(item.get(k), v) for k, v in query.items()):
                 results[key] = item
         return results
@@ -121,40 +175,141 @@ class Effortless:
         """Add an item to the database."""
         if not isinstance(item, dict):
             raise TypeError("Item must be a dictionary")
+
+        for field in self.config.requires:
+            if field not in item:
+                raise ValueError(
+                    f"Field '{field}' is configured to be required in this database"
+                )
+
         try:
             json.dumps(item)
         except (TypeError, ValueError):
             raise ValueError("Item must be JSON-serializable")
 
         data = self._read_db()
-        new_key = str(max((int(k) for k in data.keys() if k != "0"), default=0) + 1)
-        data[new_key] = item
-        self._write_db(data)
+        new_key = str(max((int(k) for k in data["content"].keys()), default=0) + 1)
 
-    def wipe(self) -> None:
+        if self.config.max_size:
+            current_size = os.path.getsize(self._storage_file) / (
+                1024 * 1024
+            )  # Size in MB
+            new_size = current_size + len(json.dumps(item)) / (1024 * 1024)
+            if new_size > self.config.max_size:
+                raise ValueError(
+                    f"The requested operation would increase the size of the database past the configured max db size ({self.config.max_size} MB)."
+                )
+
+        data["content"][new_key] = item
+        self._write_db(data)
+        self._handle_backup()
+
+    def wipe(self, wipe_readonly: bool = False) -> None:
         """Clear all data from the database."""
-        self._write_db({"0": DEFAULT_CONFIGURATION})
+        self._write_db(
+            {"headers": EffortlessConfig().to_dict(), "content": {}},
+            write_in_readonly=wipe_readonly,
+        )
+        self._update_config()
 
     def _read_db(self) -> Dict[str, Any]:
         """Read the database file."""
-        if not os.path.exists(self._storage_file):
-            self._create_db()
-        with open(self._storage_file, "r") as f:
-            return json.load(f)
+        try:
+            if not os.path.exists(self._storage_file):
+                return {"headers": EffortlessConfig().to_dict(), "content": {}}
 
-    def _write_db(self, data: Dict[str, Any]) -> None:
+            with open(self._storage_file, "rb") as f:
+                data = json.loads(f.read().decode())
+
+            headers = data["headers"]
+            content = data["content"]
+
+            if headers.get("enc"):
+                content = self._decrypt_data(content)
+
+            if headers.get("cmp"):
+                content = self._decompress_data(content)
+
+            return {"headers": headers, "content": content}
+        except (IOError, json.JSONDecodeError) as e:
+            logger.error(f"Error reading database: {str(e)}")
+            raise
+
+    def _write_db(self, data: Dict[str, Any], write_in_readonly: bool = False) -> None:
         """Write data to the database file."""
-        if not os.path.exists(self._storage_file):
-            self._create_db()
-        with open(self._storage_file, "w") as f:
-            json.dump(data, f, indent=2)
+        try:
+            if self.config.readonly and not write_in_readonly:
+                raise ValueError("Database is in read-only mode")
 
-    def _create_db(self) -> None:
-        """Create a new database file with default configuration."""
-        initial_data = {"0": DEFAULT_CONFIGURATION}
-        
-        with open(self._storage_file, "w") as f:
-            json.dump(initial_data, f, indent=2)
+            headers = data["headers"]
+            content = data["content"]
+
+            if headers.get("cmp"):
+                content = self._compress_data(content)
+
+            if headers.get("enc"):
+                content = self._encrypt_data(content)
+
+            final_data = json.dumps(
+                {"headers": headers, "content": content}, indent=2
+            ).encode()
+
+            with open(self._storage_file, "wb") as f:
+                f.write(final_data)
+
+            logger.debug(f"Data written to {self._storage_file}")
+        except IOError as e:
+            logger.error(f"Error writing to database: {str(e)}")
+            raise
+
+    def _handle_backup(self) -> None:
+        """Handle database backup based on configuration."""
+        self._operation_count += 1
+        if self.config.backup and self._operation_count >= self.config.backup_interval:
+            self._operation_count = 0
+            threading.Thread(target=self._backup).start()
+
+    def _backup(self) -> None:
+        """Perform database backup."""
+        if self.config.backup:
+            try:
+                backup_path = os.path.join(
+                    self.config.backup, os.path.basename(self._storage_file)
+                )
+                shutil.copy2(self._storage_file, backup_path)
+                logger.debug(f"Database backed up to {backup_path}")
+            except IOError as e:
+                logger.error(f"Backup failed: {str(e)}")
+
+    def _compress_data(self, data: Dict[str, Any]) -> str:
+        """Compress the given data and return as a base64-encoded string."""
+        compressed = zlib.compress(json.dumps(data).encode())
+        return base64.b64encode(compressed).decode()
+
+    def _decompress_data(self, data: str) -> Dict[str, Any]:
+        """Decompress the given base64-encoded string data."""
+        compressed = base64.b64decode(data.encode())
+        return json.loads(zlib.decompress(compressed).decode())
+
+    def _encrypt_data(self, data: Dict[str, Any]) -> str:
+        """Encrypt the given data and return as a base64-encoded string."""
+        # TODO: Implement actual encryption
+        return base64.b64encode(json.dumps(data).encode()).decode()
+
+    def _decrypt_data(self, data: str) -> Dict[str, Any]:
+        """Decrypt the given base64-encoded string data."""
+        # TODO: Implement actual decryption
+        return json.loads(base64.b64decode(data.encode()).decode())
+
+    def _encrypt_value(self, value: Any) -> Any:
+        """Encrypt a single value."""
+        # TODO: Implement encryption
+        return value
+
+    def _decrypt_value(self, value: Any) -> Any:
+        """Decrypt a single value."""
+        # TODO: Implement decryption
+        return value
 
 
-db = Effortless()
+db = EffortlessDB()

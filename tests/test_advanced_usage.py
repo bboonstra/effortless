@@ -1,12 +1,13 @@
 import tempfile
 import unittest
 import shutil
-from effortless import Effortless, effortless
+from effortless import EffortlessDB, EffortlessConfig
+
 
 class TestAdvancedUsage(unittest.TestCase):
     def setUp(self):
         self.test_dir = tempfile.mkdtemp()
-        self.db = Effortless()
+        self.db = EffortlessDB()
         self.db.set_directory(self.test_dir)
         self.db.set_storage("test_db")
         self.db.wipe()
@@ -16,7 +17,7 @@ class TestAdvancedUsage(unittest.TestCase):
 
     def test_set_directory(self):
         with self.assertRaises(TypeError):
-            self.db.set_directory(123)
+            self.db.set_directory(123)  # type: ignore
         with self.assertRaises(ValueError):
             self.db.set_directory("")
         with self.assertRaises(ValueError):
@@ -29,7 +30,7 @@ class TestAdvancedUsage(unittest.TestCase):
 
     def test_set_storage(self):
         with self.assertRaises(TypeError):
-            self.db.set_storage(123)
+            self.db.set_storage(123)  # type: ignore
         with self.assertRaises(ValueError):
             self.db.set_storage("")
         with self.assertRaises(ValueError):
@@ -44,10 +45,10 @@ class TestAdvancedUsage(unittest.TestCase):
         self.db.add({"id": 2, "name": "Bob"})
 
         result = self.db.search({"name": "Alice"})
-        self.assertEqual(result, {'1': {'id': 1, 'name': 'Alice'}})
+        self.assertEqual(result, {"1": {"id": 1, "name": "Alice"}})
 
         result = self.db.search({"id": 2})
-        self.assertEqual(result, {'2': {'id': 2, 'name': 'Bob'}})
+        self.assertEqual(result, {"2": {"id": 2, "name": "Bob"}})
 
         result = self.db.search({"name": "Charlie"})
         self.assertEqual(result, {})
@@ -56,9 +57,7 @@ class TestAdvancedUsage(unittest.TestCase):
         self.db.wipe()
         self.db.add({"id": 1, "name": "Alice"})
         data = self.db.get_all()
-        self.assertEqual(
-            data, {"1": {"id": 1, "name": "Alice"}}
-        )
+        self.assertEqual(data, {"1": {"id": 1, "name": "Alice"}})
 
         self.db.add({"id": 2, "name": "Bob"})
         data = self.db.get_all()
@@ -73,12 +72,12 @@ class TestAdvancedUsage(unittest.TestCase):
     def test_wipe(self):
         self.db.add({"test": True})
         self.db.wipe()
-        self.assertEqual(self.db._read_db(), {"0": effortless.DEFAULT_CONFIGURATION})
+        self.assertEqual(self.db._read_db(), EffortlessDB.default_db())
 
     def test_read_write_db(self):
         test_data = {
-            "0": effortless.DEFAULT_CONFIGURATION,
-            "1": {"test": True, "nested": {"key": "value"}},
+            "headers": EffortlessConfig().to_dict(),
+            "content": {"test": True, "nested": {"key": "value"}},
         }
         self.db._write_db(test_data)
         read_data = self.db._read_db()
@@ -86,7 +85,7 @@ class TestAdvancedUsage(unittest.TestCase):
 
     def test_non_existent_db(self):
         self.db.set_storage("non_existent")
-        self.assertEqual(self.db._read_db(), {"0": effortless.DEFAULT_CONFIGURATION})
+        self.assertEqual(self.db._read_db(), EffortlessDB.default_db())
 
     def test_search_in_list(self):
         self.db.wipe()
@@ -96,15 +95,15 @@ class TestAdvancedUsage(unittest.TestCase):
 
         python_devs = self.db.search({"skills": "Python"})
         self.assertEqual(len(python_devs), 2)
-        self.assertIn('1', python_devs)
-        self.assertIn('3', python_devs)
-        self.assertEqual(python_devs['1']['name'], 'Eve')
-        self.assertEqual(python_devs['3']['name'], 'Grace')
+        self.assertIn("1", python_devs)
+        self.assertIn("3", python_devs)
+        self.assertEqual(python_devs["1"]["name"], "Eve")
+        self.assertEqual(python_devs["3"]["name"], "Grace")
 
         java_devs = self.db.search({"skills": "Java"})
         self.assertEqual(len(java_devs), 1)
-        self.assertIn('2', java_devs)
-        self.assertEqual(java_devs['2']['name'], 'Frank')
+        self.assertIn("2", java_devs)
+        self.assertEqual(java_devs["2"]["name"], "Frank")
 
 
 if __name__ == "__main__":

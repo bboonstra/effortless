@@ -1,4 +1,4 @@
 # effortless/__init__.py
-from .effortless import Effortless, db
+from .effortless import EffortlessDB, db, EffortlessConfig
 
-__all__ = ['Effortless', 'db']
+__all__ = ["EffortlessDB", "db", "EffortlessConfig"]

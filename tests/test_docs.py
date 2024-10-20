@@ -1,8 +1,9 @@
 import tempfile
 import unittest
 import shutil
-from effortless import Effortless
+from effortless import EffortlessDB
 import effortless
+from effortless.effortless import EffortlessConfig
 
 
 class TestDocs(unittest.TestCase):
@@ -14,7 +15,7 @@ class TestDocs(unittest.TestCase):
 
     def test_effortless_usage(self):
         db = effortless.db # Same as from effortless import db, but trying not to clog namespace with db and effortless
-        db.wipe()
+        db.wipe(wipe_readonly=True)
 
         # Add items to the database
         db.add({"name": "Alice", "age": 30})
@@ -33,9 +34,9 @@ class TestDocs(unittest.TestCase):
 
     def test_basic_usage(self):
         # Create a new Effortless instance
-        local_db = Effortless()
-        local_db.wipe()
-
+        local_db = EffortlessDB()
+        local_db.wipe(wipe_readonly=True)
+        print(local_db._read_db())
         # Add items to the database
         local_db.add({"name": "Charlie", "age": 35})
         local_db.add({"name": "David", "age": 28})
@@ -52,8 +53,8 @@ class TestDocs(unittest.TestCase):
         })
 
     def test_advanced_usage(self):
-        # Create a new Effortless instance with a custom directory
-        advanced_db = Effortless("advanced_db")
+        # Create a new EffortlessDB instance with a custom directory
+        advanced_db = EffortlessDB("advanced_db")
         advanced_db.set_directory(self.test_dir)
         advanced_db.wipe()
 
@@ -70,11 +71,11 @@ class TestDocs(unittest.TestCase):
         })
 
         # Update configuration
-        advanced_db.configure({"index_fields": ["id", "name"]})
+        advanced_db.configure(EffortlessConfig({"index_fields": ["id", "name"]}))
 
         # Wipe the database
         advanced_db.wipe()
         self.assertEqual(advanced_db.get_all(), {})
-
+    
 if __name__ == "__main__":
     unittest.main()
