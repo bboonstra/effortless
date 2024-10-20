@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
         <nav>
             <button id="sidebarToggle">☰</button>
             <ul>
-                <li><a href="./">Home</a></li>
+                <li><a href="/">Home</a></li>
                 <li><a href="./docs/">Documentation</a></li>
                 <li><a href="https://pypi.org/project/Effortless/">PyPI</a></li>
                 <li><a href="https://github.com/bboonstra/Effortless">GitHub</a></li>
@@ -32,11 +32,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function updateToggleButton() {
         if (window.innerWidth <= 768) {
-            sidebarToggle.textContent = sidebarElement.classList.contains("active") ? "×" : "☰";
+            sidebarToggle.textContent = sidebarElement.classList.contains(
+                "active"
+            )
+                ? "×"
+                : "☰";
         } else {
-            sidebarToggle.textContent = sidebarElement.classList.contains("collapsed") ? "☰" : "▼";
+            sidebarToggle.textContent = sidebarElement.classList.contains(
+                "collapsed"
+            )
+                ? "☰"
+                : "▼";
         }
-        sidebarToggle.classList.toggle("open", sidebarElement.classList.contains("active") || !sidebarElement.classList.contains("collapsed"));
+        sidebarToggle.classList.toggle(
+            "open",
+            sidebarElement.classList.contains("active") ||
+                !sidebarElement.classList.contains("collapsed")
+        );
     }
 
     sidebarToggle.addEventListener("click", function () {
@@ -51,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Handle window resize
-    window.addEventListener("resize", function() {
+    window.addEventListener("resize", function () {
         if (window.innerWidth > 768) {
             sidebarElement.classList.remove("active");
             body.classList.remove("sidebar-active");
