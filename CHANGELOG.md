@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2024-10-20
+
+### Added
+
+- Introduced new `filter` method to replace the previous `search` functionality
+- Added `Query` and `Field` classes for more powerful and flexible querying
+- Implemented a comprehensive set of query methods:
+  - `equals`, `contains`, `startswith`, `endswith`
+  - `greater_than`, `less_than`
+  - `matches_regex`, `between_dates`, `fuzzy_match`
+- Introduced support for lambdas in Queries to give granular filtering power
+- Expanded test suite with extensive coverage for new features
+
+### Changed
+
+- Replaced `search` method with `filter` for more intuitive querying
+- Updated documentation to reflect new querying capabilities
+
+### Removed
+
+- Removed `search` method in favor of `filter`
+
 ## [1.0.0] - 2024-10-19
 
 ### Added

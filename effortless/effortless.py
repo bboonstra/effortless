@@ -2,58 +2,29 @@
 import json
 import os
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 import zlib
 import base64
 import threading
 import shutil
+from effortless.configuration import EffortlessConfig
+from effortless.search import Query
 
 logger = logging.getLogger(__name__)
 
 
-class EffortlessConfig:
-    def __init__(self, config: Dict[str, Any] = {}):
-        self.debug: bool = config.get("dbg", False)
-        self.requires: List[str] = config.get("rq", [])
-        self.max_size: Optional[int] = config.get("ms")
-        self.v: int = 1
-        self.backup: Optional[str] = config.get("bp")
-        self.backup_interval: int = config.get("bpi", 1)
-        self.encrypted: bool = config.get("enc", False)
-        self.compressed: bool = config.get("cmp", False)
-        self.readonly: bool = config.get("ro", False)
-
-        self._validate()
-
-    def _validate(self) -> None:
-        """Validate the configuration values."""
-        if self.max_size is not None and self.max_size <= 0:
-            raise ValueError("max_size must be a positive integer")
-        if self.v <= 0:
-            raise ValueError("Version must be a positive integer")
-        if self.backup_interval <= 0:
-            raise ValueError("Backup interval must be a positive integer")
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "dbg": self.debug,
-            "rq": self.requires,
-            "ms": self.max_size,
-            "v": self.v,
-            "bp": self.backup,
-            "bpi": self.backup_interval,
-            "enc": self.encrypted,
-            "cmp": self.compressed,
-            "ro": self.readonly,
-        }
-
-    @staticmethod
-    def default_headers():
-        return {"headers": EffortlessConfig().to_dict()}
-
-
 class EffortlessDB:
     def __init__(self, db_name: str = "db"):
+        """
+        Initialize an EffortlessDB instance.
+
+        This constructor sets up a new database with the given name. If no name is provided,
+        it defaults to "db". It sets up the storage and performs initial auto-configuration.
+
+        Args:
+            db_name (str, optional): The name of the database. Defaults to "db".
+
+        """
         self.config = EffortlessConfig()
         self.set_storage(db_name)
         self._autoconfigure()
@@ -61,6 +32,15 @@ class EffortlessDB:
 
     @staticmethod
     def default_db():
+        """
+        Create and return a default database structure.
+
+        This method generates a dictionary representing an empty database with default headers.
+        This is mainly used for test cases and you probably don't need it.
+
+        Returns:
+            dict: A dictionary with 'headers' (default configuration) and an empty 'content'.
+        """
         ddb = EffortlessConfig.default_headers()
         ddb["content"] = {}
         return ddb
@@ -69,8 +49,11 @@ class EffortlessDB:
         """
         Set the directory for the database file.
 
+        This method specifies where the database file should be stored. It updates the
+        internal storage path and triggers a reconfiguration of the database.
+
         Args:
-            directory (str): The directory path where the database file will be stored.
+            directory (str): The directory path where the database file will be stored. Use set_storage to set the filename.
 
         Raises:
             TypeError: If directory is not a string.
@@ -90,6 +73,9 @@ class EffortlessDB:
         """
         Set the storage file for the database.
 
+        This method determines the filename for the database storage. It appends
+        the '.effortless' extension to the provided name and updates the storage configuration.
+
         Args:
             db_name (str): The name of the database file (without extension).
                            This will be used as the prefix for the .effortless file.
@@ -101,7 +87,6 @@ class EffortlessDB:
         Note:
             The actual file will be named '{db_name}.effortless'.
         """
-
         if not isinstance(db_name, str):
             raise TypeError("The database name must be a string")
         if not db_name:
@@ -117,7 +102,13 @@ class EffortlessDB:
     def _update_storage_file(self) -> None:
         """
         Update the _storage_file based on the current directory and filename.
-        Creates the database file if it doesn't exist.
+
+        This internal method combines the storage directory (if set) with the filename
+        to create the full path for the database file. It then triggers an auto-configuration
+        to ensure the database is properly set up for the new location.
+
+        Note:
+            This method is called internally when the storage location changes.
         """
         if hasattr(self, "_storage_directory"):
             self._storage_file = os.path.join(
@@ -129,7 +120,16 @@ class EffortlessDB:
         self._autoconfigure()  # configure EffortlessConfig to the new file's configuration
 
     def _autoconfigure(self) -> None:
-        """Ensures the database has a configuration in the headers."""
+        """
+        Ensure the database has a valid configuration in its headers.
+
+        This method checks if the database file has a valid configuration. If not,
+        it creates a default configuration and writes it to the file. It then
+        updates the internal configuration object to match the file's configuration.
+
+        Note:
+            This method is called internally during initialization and when the storage changes.
+        """
         data = self._read_db()
         if "v" not in data["headers"]:
             self.config = EffortlessConfig()
@@ -138,10 +138,34 @@ class EffortlessDB:
         self._update_config()
 
     def _update_config(self):
+        """
+        Update the internal configuration object based on the database file.
+
+        This method reads the configuration from the database file and updates
+        the internal config object accordingly. It ensures that the in-memory
+        configuration always matches the one stored in the file.
+
+        Note:
+            This method is called internally after operations that might change the configuration.
+        """
         self.config = EffortlessConfig(self._read_db()["headers"])
 
     def configure(self, new_config: EffortlessConfig) -> None:
-        """Update the database configuration."""
+        """
+        Update the database configuration.
+
+        This method allows you to change the configuration of the database. It updates
+        both the in-memory configuration and the configuration stored in the file.
+
+        Args:
+            new_config (EffortlessConfig): The new configuration object to apply.
+
+        Raises:
+            TypeError: If new_config is not an EffortlessConfig object.
+
+        Note:
+            This method will write to the database file even if it's in read-only mode; read-only mode only protects against edits to the database's content.
+        """
         if not isinstance(new_config, EffortlessConfig):
             raise TypeError("New configuration must be an EffortlessConfig object")
 
@@ -154,25 +178,57 @@ class EffortlessDB:
         self._update_config()
 
     def get_all(self) -> Dict[str, Dict[str, Any]]:
-        """Return all records in the database, excluding configuration."""
+        """
+        Retrieve all records from the database.
+
+        This method returns all the data stored in the database, excluding the configuration.
+        Each item in the returned dictionary represents a record in the database.
+
+        Returns:
+            Dict[str, Dict[str, Any]]: A dictionary where keys are record IDs and values are the record data.
+        """
         return self._read_db()["content"]
 
-    def search(self, query: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
-        """Search the database for items matching the query."""
+    def filter(self, query: Query) -> Dict[str, Any]:
+        """
+        Filter the database records based on a given query.
+
+        This method applies the provided query to all records in the database and returns
+        the matching results.
+
+        Args:
+            query (Query): A Query object defining the filter criteria.
+
+        Returns:
+            Dict[str, Any]: A dictionary of records that match the query criteria.
+        """
         results = {}
-        for key, item in self._read_db()["content"].items():
-            if all(self._match_item(item.get(k), v) for k, v in query.items()):
+        for key, item in self.get_all().items():
+            if query.match(item):
                 results[key] = item
         return results
 
-    def _match_item(self, item_value: Any, query_value: Any) -> bool:
-        """Check if the item value matches the query value."""
-        if isinstance(item_value, list):
-            return query_value in item_value
-        return item_value == query_value
-
     def add(self, item: dict) -> None:
-        """Add an item to the database."""
+        """
+        Add a new item to the database.
+
+        This method adds a new record to the database. It performs several checks:
+        - Ensures the item is a dictionary
+        - Verifies that all required fields (as per configuration) are present
+        - Checks if the item is JSON-serializable
+        - Verifies that adding the item won't exceed the configured max size (if set)
+
+        Args:
+            item (dict): The item to be added to the database.
+
+        Raises:
+            TypeError: If the item is not a dictionary.
+            ValueError: If a required field is missing, if the item is not JSON-serializable,
+                        or if adding the item would exceed the max size limit.
+
+        Note:
+            This method also triggers a backup if the backup conditions are met.
+        """
         if not isinstance(item, dict):
             raise TypeError("Item must be a dictionary")
 
@@ -205,7 +261,18 @@ class EffortlessDB:
         self._handle_backup()
 
     def wipe(self, wipe_readonly: bool = False) -> None:
-        """Clear all data from the database."""
+        """
+        Clear all data from the database.
+
+        This method removes all content and headers from the database, resetting it to its initial state.
+
+        Args:
+            wipe_readonly (bool, optional): If True, allows wiping even if the database is in read-only mode.
+                                            Defaults to False.
+
+        Note:
+            Use this method with caution as it permanently deletes all data in the database. This will not wipe backups.
+        """
         self._write_db(
             {"headers": EffortlessConfig().to_dict(), "content": {}},
             write_in_readonly=wipe_readonly,
@@ -213,7 +280,22 @@ class EffortlessDB:
         self._update_config()
 
     def _read_db(self) -> Dict[str, Any]:
-        """Read the database file."""
+        """
+        Read the contents of the database file.
+
+        This internal method reads the database file, handling decryption and decompression
+        if these features are enabled in the configuration.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing the database headers and content.
+
+        Raises:
+            IOError: If there's an error reading the file.
+            json.JSONDecodeError: If the file content is not valid JSON.
+
+        Note:
+            If the database file doesn't exist, it returns a default empty database structure.
+        """
         try:
             if not os.path.exists(self._storage_file):
                 return {"headers": EffortlessConfig().to_dict(), "content": {}}
@@ -236,7 +318,24 @@ class EffortlessDB:
             raise
 
     def _write_db(self, data: Dict[str, Any], write_in_readonly: bool = False) -> None:
-        """Write data to the database file."""
+        """
+        Write data to the database file.
+
+        This internal method writes the provided data to the database file, handling
+        compression and encryption if these features are enabled in the configuration.
+
+        Args:
+            data (Dict[str, Any]): The data to write to the database.
+            write_in_readonly (bool, optional): If True, allows writing even if the database
+                                                is in read-only mode. Defaults to False.
+
+        Raises:
+            ValueError: If attempting to write to a read-only database without permission.
+            IOError: If there's an error writing to the file.
+
+        Note:
+            This method is used internally for all database write operations.
+        """
         try:
             if self.config.readonly and not write_in_readonly:
                 raise ValueError("Database is in read-only mode")
@@ -263,14 +362,30 @@ class EffortlessDB:
             raise
 
     def _handle_backup(self) -> None:
-        """Handle database backup based on configuration."""
+        """
+        Handle database backup based on configuration.
+
+        This method is called after each write operation. It increments an operation counter
+        and triggers a backup when the counter reaches the configured backup interval.
+
+        Note:
+            Backups are performed in a separate thread to avoid blocking the main operation.
+        """
         self._operation_count += 1
         if self.config.backup and self._operation_count >= self.config.backup_interval:
             self._operation_count = 0
             threading.Thread(target=self._backup).start()
 
     def _backup(self) -> None:
-        """Perform database backup."""
+        """
+        Perform a database backup.
+
+        This method creates a copy of the database file in the configured backup location.
+        It's typically called by _handle_backup() in a separate thread.
+
+        Note:
+            If the backup fails, an error is logged but no exception is raised to the caller.
+        """
         if self.config.backup:
             try:
                 backup_path = os.path.join(
@@ -282,32 +397,98 @@ class EffortlessDB:
                 logger.error(f"Backup failed: {str(e)}")
 
     def _compress_data(self, data: Dict[str, Any]) -> str:
-        """Compress the given data and return as a base64-encoded string."""
+        """
+        Compress the given data and return as a base64-encoded string.
+
+        This method compresses the input data using zlib compression and then
+        encodes it as a base64 string for storage.
+
+        Args:
+            data (Dict[str, Any]): The data to be compressed.
+
+        Returns:
+            str: A base64-encoded string of the compressed data.
+        """
         compressed = zlib.compress(json.dumps(data).encode())
         return base64.b64encode(compressed).decode()
 
     def _decompress_data(self, data: str) -> Dict[str, Any]:
-        """Decompress the given base64-encoded string data."""
+        """
+        Decompress the given base64-encoded string data.
+
+        This method decodes the base64 string, decompresses it using zlib,
+        and then parses it as JSON.
+
+        Args:
+            data (str): The base64-encoded compressed data.
+
+        Returns:
+            Dict[str, Any]: The decompressed and parsed data.
+        """
         compressed = base64.b64decode(data.encode())
         return json.loads(zlib.decompress(compressed).decode())
 
     def _encrypt_data(self, data: Dict[str, Any]) -> str:
-        """Encrypt the given data and return as a base64-encoded string."""
+        """
+        Encrypt the given data and return as a base64-encoded string.
+
+        Note: TODO This is a placeholder method and does not actually perform encryption.
+        It should be implemented with proper encryption algorithms in a production environment.
+
+        Args:
+            data (Dict[str, Any]): The data to be encrypted.
+
+        Returns:
+            str: A base64-encoded string of the "encrypted" data.
+        """
         # TODO: Implement actual encryption
         return base64.b64encode(json.dumps(data).encode()).decode()
 
     def _decrypt_data(self, data: str) -> Dict[str, Any]:
-        """Decrypt the given base64-encoded string data."""
+        """
+        Decrypt the given base64-encoded string data.
+
+        Note: TODO This is a placeholder method and does not actually perform decryption.
+        It should be implemented with proper decryption algorithms in a production environment.
+
+        Args:
+            data (str): The base64-encoded "encrypted" data.
+
+        Returns:
+            Dict[str, Any]: The "decrypted" and parsed data.
+        """
         # TODO: Implement actual decryption
         return json.loads(base64.b64decode(data.encode()).decode())
 
     def _encrypt_value(self, value: Any) -> Any:
-        """Encrypt a single value."""
+        """
+        Encrypt a single value.
+
+        Note: TODO This is a placeholder method and does not actually perform encryption.
+        It should be implemented with proper encryption algorithms in a production environment.
+
+        Args:
+            value (Any): The value to be encrypted.
+
+        Returns:
+            Any: The "encrypted" value (currently unchanged).
+        """
         # TODO: Implement encryption
         return value
 
     def _decrypt_value(self, value: Any) -> Any:
-        """Decrypt a single value."""
+        """
+        Decrypt a single value.
+
+        Note: TODO This is a placeholder method and does not actually perform decryption.
+        It should be implemented with proper decryption algorithms in a production environment.
+
+        Args:
+            value (Any): The value to be decrypted.
+
+        Returns:
+            Any: The "decrypted" value (currently unchanged).
+        """
         # TODO: Implement decryption
         return value
 

@@ -1,8 +1,7 @@
 import unittest
 import tempfile
 import shutil
-from effortless import EffortlessDB
-from effortless.effortless import EffortlessConfig
+from effortless import EffortlessDB, EffortlessConfig
 
 
 class TestConfiguration(unittest.TestCase):
@@ -64,16 +63,16 @@ class TestConfiguration(unittest.TestCase):
             self.db.add({"age": 25})  # This should raise an error
 
     def test_max_size_limit(self):
-        self.db.configure(EffortlessConfig({"ms": 1}))  # Set max size to 1 MB
-        self.db.add({"name": "Alice", "age": 30})  # This should work
-
-        # Add a large amount of data
-        large_data = {
-            "name": "Large",
-            "data": "x" * (1024 * 1024),
-        }  # Approximately 1 MB
+        self.db.wipe()
+        self.db.configure(EffortlessConfig({"ms": 0.001}))  # Set max size to 1 KB
+        
+        # This should work
+        self.db.add({"small": "data"})
+        
+        # This should raise an error
+        large_data = {"large": "x" * 1000}  # Approximately 1 KB
         with self.assertRaises(ValueError):
-            self.db.add(large_data)  # This should raise an error
+            self.db.add(large_data)
 
     def test_readonly_mode(self):
         self.db = EffortlessDB()
@@ -82,7 +81,7 @@ class TestConfiguration(unittest.TestCase):
             self.db.add({"name": "Alice"})
 
     def test_configuration_persistence(self):
-        new_config = {"dbg": True, "rq": ["name"], "ms": 100, "v": 2}
+        new_config = {"dbg": True, "rq": ["name"], "ms": 100, "v": 1}
         self.db.configure(EffortlessConfig(new_config))
 
         # Create a new instance with the same storage
@@ -95,6 +94,14 @@ class TestConfiguration(unittest.TestCase):
         self.assertEqual(config.requires, ["name"])
         self.assertEqual(config.max_size, 100)
         self.assertEqual(config.v, 1)
+
+    def test_invalid_configuration_values(self):
+        with self.assertRaises(ValueError):
+            EffortlessConfig({"ms": -1})
+        with self.assertRaises(ValueError):
+            EffortlessConfig({"v": 0})
+        with self.assertRaises(ValueError):
+            EffortlessConfig({"bpi": 0})
 
 
 if __name__ == "__main__":

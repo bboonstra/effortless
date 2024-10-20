@@ -27,20 +27,21 @@ Overachievers may want to try our [Advanced](#advanced-usage) features.
 ### Effortless Usage
 
 ```python
-from effortless import db
+from effortless import db, Field
 
 # Add items to the database
 db.add({"name": "Alice", "age": 30})
 db.add({"name": "Bob", "age": 25})
 
-# Search for items
-result = db.search({"name": "Alice"})
-print(result)  # Output: {'1': {'name': 'Alice', 'age': 30}}
-
-# Get all items
+# Get all items from the DB
 all_items = db.get_all()
 print(all_items)
 # Output: {'1': {'name': 'Alice', 'age': 30}, '2': {'name': 'Bob', 'age': 25}}
+
+# Get items based on a field
+# This will get all items where their name is Alice
+result = db.filter(Field("name").equals("Alice"))
+print(result)  # Output: {'1': {'name': 'Alice', 'age': 30}}
 
 # Wipe the database
 db.wipe()
@@ -50,7 +51,7 @@ print(db.get_all())  # Output: {}
 ### Basic Usage
 
 ```python
-from effortless import EffortlessDB
+from effortless import EffortlessDB, Field
 
 # Create a new Effortless instance
 db = EffortlessDB()
@@ -59,87 +60,107 @@ db = EffortlessDB()
 db.add({"name": "Charlie", "age": 35})
 db.add({"name": "David", "age": 28})
 
-# Search for items
-result = db.search({"age": 28})
-print(result)  # Output: {'2': {'name': 'David', 'age': 28}}
+# Filter items
+result = db.filter(Field("age").greater_than(30))
+print(result)  # Output: {'1': {'name': 'Charlie', 'age': 35}}
 
-# Get all items
-all_items = db.get_all()
-print(all_items)
-# Output: {'1': {'name': 'Charlie', 'age': 35}, '2': {'name': 'David', 'age': 28}}
 ```
 
 ### Advanced Usage
 
 ```python
-from effortless import EffortlessDB, EffortlessConfig
+from effortless import EffortlessDB, EffortlessConfig, Field, Query
 
 # Create a new Effortless instance with a custom directory
 db = EffortlessDB("advanced_db")
 db.set_directory("/path/to/custom/directory")
 
 # Add multiple items
-db.add({"id": 1, "name": "Eve", "skills": ["Python", "JavaScript"]})
-db.add({"id": 2, "name": "Frank", "skills": ["Java", "C++"]})
-db.add({"id": 3, "name": "Grace", "skills": ["Python", "Ruby"]})
+db.add({"id": 1, "name": "Eve", "skills": ["Python", "JavaScript"], "joined": "2023-01-15"})
+db.add({"id": 2, "name": "Frank", "skills": ["Java", "C++"], "joined": "2023-02-20"})
+db.add({"id": 3, "name": "Grace", "skills": ["Python", "Ruby"], "joined": "2023-03-10"})
 
-# Complex search
-python_devs = db.search({"skills": "Python"})
+# Complex filtering
+python_devs = db.filter(
+    Field("skills").contains("Python") & 
+    Field("joined").between_dates("2023-01-01", "2023-02-28")
+)
 print(python_devs)
-# Output: {'1': {'id': 1, 'name': 'Eve', 'skills': ['Python', 'JavaScript']},
-#          '3': {'id': 3, 'name': 'Grace', 'skills': ['Python', 'Ruby']}}
+
+# Custom query using Query class
+custom_query = Query(lambda item: len(item["skills"]) > 1 and "Python" in item["skills"])
+multi_skill_python_devs = db.filter(custom_query)
+print(multi_skill_python_devs)
 
 # Update configuration
-new_config = EffortlessConfig()
-new_config.readonly = True
-db.configure(new_config)
+db.configure(EffortlessConfig({"readonly": True}))
+# The database contents are now read-only
+db.add({"Anything": "will not work"}) # Raises an error
 
-# Test this configuration
-db.add({})
-# Output: ValueError: Database is in read-only mode
-
-# Wipe the database
-db.wipe(wipe_readonly=True)
-print(db.get_all())  # Output: {}
 ```
+
+## New Filtering Capabilities
+
+Effortless 1.1.0 introduces powerful filtering capabilities using the `Field` class:
+
+- `equals`: Exact match
+- `contains`: Check if a value is in a string or list
+- `startswith`, `endswith`: String prefix and suffix matching
+- `greater_than`, `less_than`: Numeric comparisons
+- `matches_regex`: Regular expression matching
+- `between_dates`: Date range filtering
+- `fuzzy_match`: Approximate string matching
+
+You can combine these filters using `&` (AND) and `|` (OR) operators for complex queries.
+
+```python
+result = db.filter(
+    (Field("age").greater_than(25) & Field("skills").contains("Python")) |
+    Field("name").startswith("A")
+)
+```
+
+For even more flexibility, you can use the `Query` class with a custom lambda function:
+
+```python
+from effortless import Query
+
+custom_query = Query(lambda item: len(item["name"]) > 5 and item["age"] % 2 == 0)
+result = db.filter(custom_query)
+```
+
+These new filtering capabilities make Effortless more powerful while maintaining its simplicity and ease of use.
 
 ## Why Effortless?
 
-Not only is storing, retrieving, and managing data is as simple is it can be,
-Effortless is also:
+If you're actually reading this section, it seems like you don't care about the whole "effortless" part. If you did, you'd already have your own million-dollar startup with one of our databases by now. So, here's some other reasons Effortless stands out:
 
-- ### Everywhere
+### 🛡️ Safety First
 
-    Effortless DBs work on any device supporting Python and DBs can be copied across
-devices.
+All your data is safe, lossless, and locally stored by default. You can begin persistent, automatic backups, keyed database encryption, and more with a couple lines of Python.
 
-- ### Safe
+```py
+new_configuration = EffortlessConfig()
+new_configuration.backup = "/path/to/backup"
+db.configure(new_configuration)
+```
 
-    All DB data is safe, lossless, local, and recoverable by default.
+All your data is now automatically backed up to the specified path until you edit the configuration again.
 
-- ### Scaling
+### 🔍 Powerful Querying
 
-    Our DBs have deep code support for batch functions.
+Effortless introduces a unique and intuitive object-oriented filter system. You can create a reusable Field condition with logical operators to find anything from your database.
 
-- ### Clear
+```python
+is_bboonstra = Field("username").equals("bboonstra")
+is_experienced = Query(lambda item: len(item["known_programming_languages"]) > 5)
+GOATs = db.filter(is_bboonstra | is_experienced)
+```
 
-    We take pride in our documentation, so that learning takes minimal effort.
+You've just filtered a thousand users into a couple with complex conditioning, and it was effortless.
 
-- ### Broad
+### 🎓 Perfect for Learning
 
-    All that's required to use Effortless is Python >= 3.9.
+Whether you're a beginner or an experienced developer, Effortless provides a gentle learning curve without sacrificing power, making it an ideal choice for educational environments and rapid prototyping.
 
-- ### Compact
-
-    Our code is compact, both in package size, dependencies, and db size.
-
-[![Lines of Code](https://img.shields.io/github/languages/code-size/bboonstra/Effortless)](https://github.com/bboonstra/Effortless)
-[![Package Size](https://img.shields.io/github/repo-size/bboonstra/Effortless)](https://github.com/bboonstra/Effortless)
-[![Dependencies](https://img.shields.io/librariesio/github/bboonstra/Effortless)](https://libraries.io/github/bboonstra/Effortless)
-
----
-
-## Contributing
-
-Writing code takes a lot of effort! Check out [CONTRIBUTING](CONTRIBUTING.md)
-for information.
+This project isn't a database; it's a philosophy:  data management should be simple, powerful, and... _Effortless_.

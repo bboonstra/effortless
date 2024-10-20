@@ -1,7 +1,8 @@
 import shutil
 import tempfile
 import unittest
-from effortless import db, EffortlessConfig, EffortlessDB
+from effortless import db, EffortlessDB, EffortlessConfig
+from effortless.search import Field
 
 
 class TestEffortlessUsage(unittest.TestCase):
@@ -16,7 +17,7 @@ class TestEffortlessUsage(unittest.TestCase):
 
     def test_set_directory(self):
         with self.assertRaises(TypeError):
-            db.set_directory(123) # type: ignore
+            db.set_directory(123)  # type: ignore
         with self.assertRaises(ValueError):
             db.set_directory("")
         with self.assertRaises(ValueError):
@@ -29,7 +30,7 @@ class TestEffortlessUsage(unittest.TestCase):
 
     def test_set_storage(self):
         with self.assertRaises(TypeError):
-            db.set_storage(123) # type: ignore
+            db.set_storage(123)  # type: ignore
         with self.assertRaises(ValueError):
             db.set_storage("")
         with self.assertRaises(ValueError):
@@ -43,13 +44,13 @@ class TestEffortlessUsage(unittest.TestCase):
         db.add({"id": 1, "name": "Alice"})
         db.add({"id": 2, "name": "Bob"})
 
-        result = db.search({"name": "Alice"})
+        result = db.filter(query=Field("name").equals("Alice"))
         self.assertEqual(result, {"1": {"id": 1, "name": "Alice"}})
 
-        result = db.search({"id": 2})
+        result = db.filter(query=Field("id").equals(2))
         self.assertEqual(result, {"2": {"id": 2, "name": "Bob"}})
 
-        result = db.search({"name": "Charlie"})
+        result = db.filter(query=Field("name").equals("Charlie"))
         self.assertEqual(result, {})
 
     def test_add(self):

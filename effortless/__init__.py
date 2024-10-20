@@ -1,4 +1,6 @@
 # effortless/__init__.py
-from .effortless import EffortlessDB, db, EffortlessConfig
+from .configuration import EffortlessConfig
+from .effortless import EffortlessDB, db
+from .search import Query, Field
 
-__all__ = ["EffortlessDB", "db", "EffortlessConfig"]
+__all__ = ["EffortlessDB", "db", "EffortlessConfig", "Query", "Field"]
