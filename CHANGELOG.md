@@ -11,7 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Introduced new `passes` method for custom filtering functions
 - Added `is_type` method for type checking in queries
-- Expanded test suite to cover new `passes` and `is_type` functionalities
 - Implements a blocking `finish_backup` method to databases to complete a backup before proceeding
 
 ## [1.1.0] - 2024-10-20
