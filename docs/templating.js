@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
     `;
 
     const sidebar = `
-        <div id="sidebar">
+        <div id="sidebar" class="collapsed">
             <h3>Documentation</h3>
             <ul>
                 <li><a href="/Effortless/docs/setup.html">Setup</a></li>
