@@ -1,7 +1,7 @@
 :root {
-    --primary-color: #3498db;
-    --secondary-color: #2c3e50;
-    --text-color: #333;
+    --primary-color: #6a8eff;
+    --secondary-color: #373737;
+    --text-color: #373737;
     --background-color: #f4f4f4;
     --sidebar-width: 20%;
     --sidebar-collapsed-width: 0px;
@@ -55,9 +55,9 @@ nav ul li a:hover {
 }
 
 main {
-    max-width: 800px;
     margin: 5rem auto 2rem;
     padding: 0 1rem;
+    margin-left: 0px;
 }
 
 h1,
@@ -86,6 +86,12 @@ a:hover {
     text-decoration: underline;
 }
 
+.banner-logo {
+    width: 80vw;
+    height: auto;
+    padding: 0px;
+    margin: 0px;
+}
 #sidebarToggle {
     background: none;
     border: none;
@@ -113,8 +119,8 @@ a:hover {
     top: 0;
     bottom: 0;
     width: var(--sidebar-width);
-    background-color: var(--secondary-color);
-    color: white;
+    background-color: var(--text-color);
+    color: var(--background-color);
     padding: 1rem;
     padding-top: 5rem;
     overflow-y: auto;
@@ -130,6 +136,10 @@ a:hover {
 #sidebar.collapsed h3,
 #sidebar.collapsed ul {
     display: none;
+}
+
+#sidebar a {
+    color: var(--background-color);
 }
 
 main {
