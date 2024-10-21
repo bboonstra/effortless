@@ -3,8 +3,8 @@ document.addEventListener("DOMContentLoaded", function () {
         <nav>
             <button id="sidebarToggle">☰</button>
             <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="./docs/">Docs</a></li>
+                <li><a href="/index.html">Home</a></li>
+                <li><a href="/docs/">Docs</a></li>
                 <li><a href="https://pypi.org/project/Effortless/">PyPI</a></li>
                 <li><a href="https://github.com/bboonstra/Effortless">GitHub</a></li>
             </ul>
@@ -17,15 +17,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 <li>
                     <span class="dropdown-toggle">Getting Started</span>
                     <ul class="dropdown">
-                        <li><a href="/Effortless/docs/setup.html">Installation</a></li>
+                        <li><a href="/docs/install.html">Installation</a></li>
                     </ul>
                 </li>
                 <li>
                     <span class="dropdown-toggle">Usage</span>
                     <ul class="dropdown">
-                        <li><a href="/Effortless/docs/effortless-usage.html">Effortless</a></li>
-                        <li><a href="/Effortless/docs/basic-usage.html" target="_blank">Basic</a></li>
-                        <li><a href="/Effortless/docs/advanced-usage.html" target="_blank">Advanced</a></li>
+                        <li><a href="/docs/effortless-usage.html">Effortless</a></li>
+                        <li><a href="/docs/basic-usage.html" target="_blank">Basic</a></li>
+                        <li><a href="/docs/advanced-usage.html" target="_blank">Advanced</a></li>
                     </ul>
                 </li>
             </ul>
