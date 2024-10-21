@@ -1,3 +1,6 @@
+@import url("https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism.min.css");
+@import url("https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/line-numbers/prism-line-numbers.min.css");
+
 .button-container {
     display: flex;
     justify-content: space-between;
@@ -47,35 +50,69 @@
 
 .command-container {
     display: inline-flex;
-    align-items: center;
-    background-color: var(--code-background);
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
+    align-items: stretch;
+    background-color: color-mix(in srgb, var(--effortless-gray) 80%, black);
+    border: 1px solid var(--tertiary-color);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    width: auto;
+    max-width: 100%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.command-container pre {
+    margin: 0;
+    padding: 0;
+    border-radius: 8px 0px 0px 8px;
+    border: none;
 }
 
 .command-container code {
-    font-size: 1.1em;
+    display: block;
+    padding: 1em;
+    overflow-x: auto;
+    font-family: "Consolas", "Monaco", "Andale Mono", "Ubuntu Mono", monospace;
+    font-size: 0.9em;
+    line-height: 1.5;
+    color: var(--effortless-white);
+    white-space: pre;
+    background-color: color-mix(in srgb, var(--effortless-gray) 80%, black);
+    text-shadow: none !important;
+}
+
+.command-container code span {
+    background-color: transparent !important;
+}
+
+code[class*="language-"] .token.comment,
+pre[class*="language-"] .token.comment {
+    color: var(--tertiary-color);
 }
 
 .copy-button {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 5px;
-    margin-left: 10px;
-    transition: opacity 0.3s;
-    position: relative;
+    padding: 10px;
+    transition: background-color 0.3s;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--background-color);
+    border-radius: 0px 8px 8px 0px;
+    position: relative; /* Add this line */
 }
 
 .copy-button:hover {
-    opacity: 0.7;
+    background-color: rgba(0, 0, 0, 0.05);
 }
 
 .copy-button svg {
-    width: 24px;
-    height: 24px;
-    fill: var(--text-color);
+    width: 20px;
+    height: 20px;
+    fill: var(--effortless-white);
+    transition: opacity 0.3s ease;
 }
 
 .copy-feedback {
@@ -95,6 +132,7 @@
 
 .copy-button.copied .copy-feedback {
     opacity: 1;
+    z-index: 100;
 }
 
 .command-instructions {

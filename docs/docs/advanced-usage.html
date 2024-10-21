@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Effortless - Advanced Usage</title>
+        <link rel="stylesheet" href="../styles.css" />
+        <link rel="stylesheet" href="docs.css" />
+        <script src="../templating.js"></script>
+        <script src="docs.js" type="module"></script>
+    </head>
+    <body>
+        <main>
+            <h1 class="feature">Advanced Usage</h1>
+            <p>
+                For those who want more control and advanced features, Effortless offers powerful capabilities. Here's how to use Effortless with advanced features:
+            </p>
+
+            <h2>1. Importing Advanced Components</h2>
+            <p>Start by importing the necessary advanced components from Effortless:</p>
+            <!-- prettier-ignore -->
+            <div class="command python">
+                from effortless import EffortlessDB, EffortlessConfig, Field, Query
+            </div>
+
+            <h2>2. Creating a Custom Database Instance</h2>
+            <p>Create a new Effortless instance with a custom directory:</p>
+            <!-- prettier-ignore -->
+            <div class="command python">
+                db = EffortlessDB("advanced_db")
+                db.set_directory("/path/to/custom/directory")
+            </div>
+
+            <h2>3. Adding Multiple Items</h2>
+            <p>Add multiple items with more complex data structures:</p>
+            <!-- prettier-ignore -->
+            <div class="command python">
+                db.add({"id": 1, "name": "Eve", "skills": ["Python", "JavaScript"], "joined": "2023-01-15"})
+                db.add({"id": 2, "name": "Frank", "skills": ["Java", "C++"], "joined": "2023-02-20"})
+                db.add({"id": 3, "name": "Grace", "skills": ["Python", "Ruby"], "joined": "2023-03-10"})
+            </div>
+
+            <h2>4. Complex Filtering</h2>
+            <p>Use advanced filtering techniques to find specific items:</p>
+            <!-- prettier-ignore -->
+            <div class="command python">
+                python_devs = db.filter(
+                    Field("skills").contains("Python") & 
+                    Field("joined").between_dates("2023-01-01", "2023-02-28")
+                )
+                print(python_devs)
+            </div>
+
+            <h2>5. Custom Queries</h2>
+            <p>Create custom queries using the Query class:</p>
+            <!-- prettier-ignore -->
+            <div class="command python">
+                custom_query = Query(lambda item: len(item["skills"]) > 1 and "Python" in item["skills"])
+                multi_skill_python_devs = db.filter(custom_query)
+                print(multi_skill_python_devs)
+            </div>
+
+            <h2>6. Configuring the Database</h2>
+            <p>Update the database configuration for advanced settings:</p>
+            <!-- prettier-ignore -->
+            <div class="command python">
+                db.configure(EffortlessConfig({"readonly": True}))
+                # The database contents are now read-only
+                db.add({"Anything": "will not work"})  # Raises an error
+            </div>
+
+            <h2>7. Advanced Filtering Capabilities</h2>
+            <p>Effortless 1.1 introduces powerful filtering capabilities:</p>
+            <!-- prettier-ignore -->
+            <div class="command python">
+                result = db.filter(
+                    (Field("age").greater_than(25) & Field("skills").contains("Python")) |
+                    Field("name").startswith("A")
+                )
+            </div>
+
+            <p>You can also use custom functions with the `passes` method:</p>
+            <!-- prettier-ignore -->
+            <div class="command python">
+                def is_experienced(skills):
+                    return len(skills) > 3
+
+                result = db.filter(Field("skills").passes(is_experienced))
+            </div>
+
+            <p>Check the type of a field:</p>
+            <!-- prettier-ignore -->
+            <div class="command python">
+                result = db.filter(Field("age").is_type(int))
+            </div>
+
+            <p class="command-instructions">
+                Click the copy icon to copy the code to your clipboard.
+            </p>
+
+            <p>
+                These advanced features allow you to create more complex database structures,
+                perform intricate queries, and have finer control over your database configuration.
+            </p>
+
+            <div class="button-container">
+                <a href="basic-usage.html" class="tab-button tab-button-back">Basic Usage</a>
+            </div>
+        </main>
+    </body>
+</html>

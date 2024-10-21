@@ -170,12 +170,10 @@ function adjustLinks() {
     const isLocalhost =
         window.location.hostname === "localhost" ||
         window.location.hostname === "127.0.0.1";
-    console.log(isLocalhost);
     links.forEach((link) => {
         var href = link.getAttribute("href");
         if (isLocalhost) {
             href = href.replace("Effortless", "");
-            console.log(href);
             link.setAttribute("href", href);
         }
     });

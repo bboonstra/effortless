@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Effortless - Basic Usage</title>
+        <link rel="stylesheet" href="../styles.css" />
+        <link rel="stylesheet" href="docs.css" />
+        <script src="../templating.js"></script>
+        <script src="docs.js" type="module"></script>
+    </head>
+    <body>
+        <main>
+            <h1 class="feature">Basic Usage</h1>
+            <p>
+                Here's how to use Effortless with a bit more control over your database:
+            </p>
+
+            <h2>1. Importing Effortless</h2>
+            <p>Start by importing the necessary components from Effortless:</p>
+            <!-- prettier-ignore -->
+            <div class="command python">
+                from effortless import EffortlessDB, Field
+            </div>
+
+            <h2>2. Creating a Database Instance</h2>
+            <p>Create a new Effortless instance:</p>
+            <!-- prettier-ignore -->
+            <div class="command python">
+                db = EffortlessDB()
+            </div>
+
+            <h2>3. Adding Items to the Database</h2>
+            <p>Use <code>db.add()</code> to insert new items into the database:</p>
+            <!-- prettier-ignore -->
+            <div class="command python">
+                db.add({"name": "Charlie", "age": 35})
+                db.add({"name": "David", "age": 28})
+            </div>
+
+            <h2>4. Filtering Items</h2>
+            <p>
+                Use <code>db.filter()</code> with a <code>Field</code> condition
+                to find specific items:
+            </p>
+            <!-- prettier-ignore -->
+            <div class="command python">
+                result = db.filter(Field("age").greater_than(30))
+                print(result)  # Output: {'1': {'name': 'Charlie', 'age': 35}}
+            </div>
+
+            <p class="command-instructions">
+                Click the copy icon to copy the code to your clipboard.
+            </p>
+
+            <p>
+                This basic usage allows you to create a specific database instance,
+                add items, and perform more advanced filtering operations.
+            </p>
+
+            <div class="button-container">
+                <a href="effortless-usage.html" class="tab-button tab-button-back">Effortless Usage</a>
+                <a href="advanced-usage.html" class="tab-button tab-button-forward">Advanced Usage</a>
+            </div>
+        </main>
+    </body>
+</html>

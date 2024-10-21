@@ -246,3 +246,91 @@ main {
 .no-transition {
     transition: none !important;
 }
+
+.tab-button {
+    flex: 1 1 100%;
+    padding: 15px 20px;
+    background-color: var(--navbar-color);
+    color: var(--background-color);
+    text-align: center;
+    text-decoration: none;
+    font-size: 1.1em;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+    margin: 0 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tab-button a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+}
+
+.tab-button:hover {
+    background-color: var(--hover-color);
+    color: var(--effortless-gray);
+}
+
+.tab-button-back,
+.tab-button-forward {
+    position: relative;
+    padding-left: 35px;
+    padding-right: 35px;
+}
+
+.tab-button-back::before,
+.tab-button-forward::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+}
+
+.tab-button-back::before {
+    left: 15px;
+    border-right: 8px solid var(--background-color);
+    transform: translateY(-50%);
+}
+
+.tab-button-forward::after {
+    right: 15px;
+    border-left: 8px solid var(--background-color);
+    transform: translateY(-50%);
+}
+
+.tab-button-back:hover::before {
+    border-right-color: var(--effortless-gray);
+}
+
+.tab-button-forward:hover::after {
+    border-left-color: var(--effortless-gray);
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;  /* Change from space-between to center */
+    margin: 20px auto;  /* Change from 20px 0 to 20px auto */
+    width: auto;  /* Change from 100% to auto */
+}
+
+/* For the quickstart page */
+.button-container:first-of-type {
+    margin-top: 30px;
+}
+
+/* For the docs homepage */
+.button-container:not(:first-of-type) {
+    margin-top: 10px;
+}

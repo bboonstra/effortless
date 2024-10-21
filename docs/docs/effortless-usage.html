@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Effortless - Usage</title>
+        <link rel="stylesheet" href="../styles.css" />
+        <link rel="stylesheet" href="docs.css" />
+        <script src="../templating.js"></script>
+        <script src="docs.js" type="module"></script>
+    </head>
+    <body>
+        <main>
+            <h1 class="feature">Effortless Usage</h1>
+            <p>
+                Get started with Effortless in just a few lines of code. Here's
+                how to use the basic features:
+            </p>
+
+            <h2>1. Importing Effortless</h2>
+            <p>Start by importing the necessary components from Effortless:</p>
+            <div class="command python">from effortless import db, Field</div>
+
+            <h2>2. Adding Items to the Database</h2>
+            <p>
+                Use <code>db.add()</code> to insert new items into the database:
+            </p>
+            <!-- prettier-ignore -->
+            <div class="command python">
+                db.add({"name": "Alice", "age": 30}) 
+                db.add({"name":"Bob","age": 25})
+            </div>
+
+            <h2>3. Retrieving All Items</h2>
+            <p><code>db.get_all()</code> returns all items in the database:</p>
+            <!-- prettier-ignore -->
+            <div class="command python">
+                all_items = db.get_all() print(all_items) 
+                # Output: {'1': {'name': 'Alice', 'age': 30}, '2': {'name': 'Bob', 'age': 25}}
+            </div>
+
+            <h2>4. Filtering Items</h2>
+            <p>
+                Use <code>db.filter()</code> with a <code>Field</code> condition
+                to find specific items:
+            </p>
+            <!-- prettier-ignore -->
+            <div class="command python">
+                result = db.filter(Field("name").equals("Alice")) 
+                print(result)
+                # Output: {'1': {'name': 'Alice', 'age': 30}}
+            </div>
+
+            <p class="command-instructions">
+                Click the copy icon to copy the code to your clipboard.
+            </p>
+
+            <p>
+                This effortless usage allows you to quickly set up a database,
+                add items, retrieve data, and perform basic operations without
+                any complex setup or configuration.
+            </p>
+
+            <div class="button-container">
+                <a href="quickstart.html" class="tab-button tab-button-back">Quickstart</a>
+                <a href="basic-usage.html" class="tab-button tab-button-forward">Basic Usage</a>
+            </div>
+        </main>
+    </body>
+</html>
