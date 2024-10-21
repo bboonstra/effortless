@@ -8,10 +8,13 @@ document.addEventListener("templateConstructed", function () {
 
     function updateSectionColors() {
         sections.forEach((section, index) => {
-            section.style.backgroundColor =
-                index % 2 === 0
-                    ? "var(--background-color)"
-                    : "var(--effortless-blue)";
+            if (index % 2 === 0) {
+                section.style.backgroundColor = "var(--background-color)";
+                section.style.background = "var(--background-color)";
+            } else {
+                section.style.backgroundColor = "transparent";
+                section.style.background = "linear-gradient(90deg, var(--effortless-blue), var(--effortless-green))";
+            }
         });
     }
 
@@ -19,7 +22,6 @@ document.addEventListener("templateConstructed", function () {
         var currentSectionColor = getComputedStyle(sections[currentSection]).backgroundColor;
         var backgroundColorHex = getComputedStyle(document.documentElement).getPropertyValue("--background-color").trim();
         var backgroundColorRgb = hexToRgb(backgroundColorHex);
-        console.log(currentSectionColor);
         var arrowColor = currentSectionColor === backgroundColorRgb
             ? "var(--primary-color)"
             : "var(--background-color)";

@@ -1,10 +1,57 @@
+function updateTheme(theme) {
+    const themeProperties = {
+        dark: {
+            "--background-color": "var(--effortless-gray)",
+            "--text-color": "var(--effortless-white)",
+            "--secondary-color": "var(--effortless-white)",
+            "--navbar-color": "var(--effortless-blue)",
+            "--header-color": "var(--effortless-white)",
+            "--hover-color": "var(--effortless-green)",
+            icon: "☀️",
+        },
+        light: {
+            "--background-color": "var(--effortless-white)",
+            "--text-color": "var(--effortless-gray)",
+            "--secondary-color": "var(--effortless-gray)",
+            "--navbar-color": "var(--effortless-gray)",
+            "--header-color": "var(--effortless-blue)",
+            "--hover-color": "var(--effortless-green)",
+            icon: "🌙",
+        },
+    };
+
+    const properties = themeProperties[theme];
+    Object.entries(properties).forEach(([property, value]) => {
+        if (property !== "icon") {
+            document.documentElement.style.setProperty(property, value);
+        }
+    });
+
+    // We'll update the theme toggle button later when it's created
+}
+
+// Set the initial theme immediately
+(function () {
+    let currentTheme = localStorage.getItem("theme") || "dark";
+    document.documentElement.setAttribute("data-theme", currentTheme);
+    document.documentElement.classList.add("no-transition");
+    updateTheme(currentTheme);
+
+    // Remove the no-transition class after a short delay
+    setTimeout(() => {
+        document.documentElement.classList.remove("no-transition");
+    }, 50);
+})();
+
+document.addEventListener("templateConstructed", adjustLinks);
+
 document.addEventListener("DOMContentLoaded", function () {
     const navbar = `
         <nav>
             <button id="sidebarToggle">☰</button>
             <ul>
-                <li><a href="/index.html">Home</a></li>
-                <li><a href="/docs/">Docs</a></li>
+                <li><a href="Effortless/">Home</a></li>
+                <li><a href="Effortless/docs/">Docs</a></li>
                 <li><a href="https://pypi.org/project/Effortless/">PyPI</a></li>
                 <li><a href="https://github.com/bboonstra/Effortless">GitHub</a></li>
             </ul>
@@ -17,15 +64,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 <li>
                     <span class="dropdown-toggle">Getting Started</span>
                     <ul class="dropdown">
-                        <li><a href="/docs/install.html">Installation</a></li>
+                        <li><a href="Effortless/docs/quickstart.html">Quickstart</a></li>
                     </ul>
                 </li>
                 <li>
                     <span class="dropdown-toggle">Usage</span>
                     <ul class="dropdown">
-                        <li><a href="/docs/effortless-usage.html">Effortless</a></li>
-                        <li><a href="/docs/basic-usage.html" target="_blank">Basic</a></li>
-                        <li><a href="/docs/advanced-usage.html" target="_blank">Advanced</a></li>
+                        <li><a href="Effortless/docs/effortless-usage.html">Effortless</a></li>
+                        <li><a href="Effortless/docs/basic-usage.html" target="_blank">Basic</a></li>
+                        <li><a href="Effortless/docs/advanced-usage.html" target="_blank">Advanced</a></li>
                     </ul>
                 </li>
             </ul>
@@ -44,10 +91,17 @@ document.addEventListener("DOMContentLoaded", function () {
     function updateToggleButton() {
         const isMobile = window.innerWidth <= 768;
         sidebarToggle.textContent = isMobile
-            ? (sidebarElement.classList.contains("active") ? "×" : "☰")
-            : (sidebarElement.classList.contains("collapsed") ? "☰" : "▼");
-        sidebarToggle.classList.toggle("open", 
-            sidebarElement.classList.contains("active") || !sidebarElement.classList.contains("collapsed"));
+            ? sidebarElement.classList.contains("active")
+                ? "×"
+                : "☰"
+            : sidebarElement.classList.contains("collapsed")
+            ? "☰"
+            : "▼";
+        sidebarToggle.classList.toggle(
+            "open",
+            sidebarElement.classList.contains("active") ||
+                !sidebarElement.classList.contains("collapsed")
+        );
     }
 
     function toggleSidebar() {
@@ -82,59 +136,47 @@ document.addEventListener("DOMContentLoaded", function () {
     handleResize();
 
     let currentTheme = localStorage.getItem("theme") || "dark";
-    document.documentElement.setAttribute("data-theme", currentTheme);
-
-    function updateTheme(theme) {
-        const themeProperties = {
-            dark: {
-                "--background-color": "var(--effortless-gray)",
-                "--text-color": "var(--effortless-white)",
-                "--secondary-color": "var(--effortless-white)",
-                "--navbar-color": "var(--effortless-blue)",
-                "--header-color": "var(--effortless-white)",
-                "--hover-color": "var(--effortless-gray)",
-                icon: "☀️"
-            },
-            light: {
-                "--background-color": "var(--effortless-white)",
-                "--text-color": "var(--effortless-gray)",
-                "--secondary-color": "var(--effortless-gray)",
-                "--navbar-color": "var(--effortless-gray)",
-                "--header-color": "var(--effortless-blue)",
-                "--hover-color": "var(--effortless-blue)",
-                icon: "🌙"
-            }
-        };
-
-        const properties = themeProperties[theme];
-        Object.entries(properties).forEach(([property, value]) => {
-            if (property !== "icon") {
-                document.documentElement.style.setProperty(property, value);
-            }
-        });
-        themeToggle.textContent = properties.icon;
-    }
 
     function toggleTheme() {
         currentTheme = currentTheme === "light" ? "dark" : "light";
         document.documentElement.setAttribute("data-theme", currentTheme);
         updateTheme(currentTheme);
         localStorage.setItem("theme", currentTheme);
+        themeToggle.textContent = currentTheme === "light" ? "🌙" : "☀️";
     }
 
     themeToggle.addEventListener("click", toggleTheme);
 
-    document.querySelectorAll(".dropdown-toggle").forEach(toggle => {
-        toggle.addEventListener("click", function() {
+    // Set the initial state of the theme toggle button
+    themeToggle.textContent = currentTheme === "light" ? "🌙" : "☀️";
+
+    document.querySelectorAll(".dropdown-toggle").forEach((toggle) => {
+        toggle.addEventListener("click", function () {
             const dropdown = this.nextElementSibling;
-            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+            dropdown.style.display =
+                dropdown.style.display === "block" ? "none" : "block";
         });
     });
 
-    updateTheme(currentTheme);
     updateToggleButton();
 
     setTimeout(() => {
-        document.dispatchEvent(new Event('templateConstructed'));
+        document.dispatchEvent(new Event("templateConstructed"));
     }, 100);
 });
+
+function adjustLinks() {
+    var links = document.querySelectorAll("a");
+    const isLocalhost =
+        window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1";
+    console.log(isLocalhost);
+    links.forEach((link) => {
+        var href = link.getAttribute("href");
+        if (isLocalhost) {
+            href = href.replace("Effortless", "");
+            console.log(href);
+            link.setAttribute("href", href);
+        }
+    });
+}

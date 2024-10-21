@@ -1,0 +1,105 @@
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+    width: 100%;
+}
+
+.tab-button {
+    flex: 1;
+    padding: 15px 20px;
+    background-color: var(--navbar-color);
+    color: var(--background-color);
+    text-align: center;
+    text-decoration: none;
+    font-size: 1.1em;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+    margin: 0 5px;
+}
+
+.tab-button:hover {
+    background-color: var(--hover-color);
+    color: var(--effortless-gray);
+}
+
+/* For the quickstart page */
+.button-container:first-of-type {
+    margin-top: 30px;
+}
+
+/* For the docs homepage */
+.button-container:not(:first-of-type) {
+    margin-top: 10px;
+}
+
+.terminal-command {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.terminal-command:hover {
+    text-decoration: underline;
+}
+
+.command-container {
+    display: inline-flex;
+    align-items: center;
+    background-color: var(--code-background);
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.command-container code {
+    font-size: 1.1em;
+}
+
+.copy-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    margin-left: 10px;
+    transition: opacity 0.3s;
+    position: relative;
+}
+
+.copy-button:hover {
+    opacity: 0.7;
+}
+
+.copy-button svg {
+    width: 24px;
+    height: 24px;
+    fill: var(--text-color);
+}
+
+.copy-feedback {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--navbar-color);
+    color: var(--background-color);
+    padding: 5px 10px;
+    border-radius: 3px;
+    font-size: 0.8em;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+
+.copy-button.copied .copy-feedback {
+    opacity: 1;
+}
+
+.command-instructions {
+    font-size: 0.9em;
+    color: var(--text-color);
+    margin-top: 10px;
+    font-style: italic;
+}

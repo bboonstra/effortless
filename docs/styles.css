@@ -3,10 +3,12 @@
 :root {
     --effortless-blue: #6a8eff;
     --effortless-gray: #373737;
+    --effortless-green: #8adbae;
     --effortless-white: #f4f4f4;
     --primary-color: #6a8eff;
     --header-color: #6a8eff;
     --secondary-color: #373737;
+    --tertiary-color: #8adbae;
     --text-color: #373737;
     --hover-color: #6a8eff;
     --background-color: #f4f4f4;
@@ -42,6 +44,7 @@ nav {
     left: 0;
     right: 0;
     z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 nav ul {
@@ -238,4 +241,8 @@ main {
 
 .dropdown-toggle:hover {
     text-decoration: underline;
+}
+
+.no-transition {
+    transition: none !important;
 }
