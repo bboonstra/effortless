@@ -11,12 +11,12 @@ body {
     align-items: center;
     flex-direction: column;
     scroll-snap-align: start; /* Align sections for snapping */
-    padding: 20px;
     text-align: center;
 }
 
 .section * {
     max-width: 80%;
+    min-width: 300px;
 }
 
 .section h2 {

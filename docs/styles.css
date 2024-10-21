@@ -102,11 +102,19 @@ a:hover {
 }
 
 .banner-logo {
-    width: 80vw;
+    max-width: 80vw;
     height: auto;
-    padding: 0px;
-    margin: 0px;
+    padding: 0;
+    margin: 0;
 }
+
+@media (max-width: 768px) {
+    .banner-logo {
+        width: 100vw !important;
+        max-width: 100vw !important;
+    }
+}
+
 #sidebarToggle {
     background: none;
     border: none;
