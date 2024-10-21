@@ -1,14 +1,28 @@
+@import url("https://fonts.googleapis.com/css2?family=Exo:ital,wght@1,100&display=swap");
+
 :root {
+    --effortless-blue: #6a8eff;
+    --effortless-gray: #373737;
+    --effortless-white: #f4f4f4;
     --primary-color: #6a8eff;
+    --header-color: #6a8eff;
     --secondary-color: #373737;
     --text-color: #373737;
+    --hover-color: #6a8eff;
     --background-color: #f4f4f4;
+    --navbar-color: #373737;
     --sidebar-width: 20%;
     --sidebar-collapsed-width: 0px;
+    --feature-font: "Exo", sans-serif;
+    --body-font: "Arial", sans-serif; /* Add your body font here */
+}
+
+* { /* Change colors smoothly for theme changes */
+    transition: color 0.3s ease, background-color 0.3s ease;
 }
 
 body {
-    font-family: "Arial", sans-serif;
+    font-family: var(--body-font); /* Use the body font */
     line-height: 1.6;
     color: var(--text-color);
     background-color: var(--background-color);
@@ -18,7 +32,7 @@ body {
 }
 
 nav {
-    background-color: var(--secondary-color);
+    background-color: var(--navbar-color);
     padding: 1rem;
     display: flex;
     justify-content: space-between;
@@ -47,11 +61,10 @@ nav ul li a {
     color: white;
     text-decoration: none;
     font-weight: bold;
-    transition: color 0.3s ease;
 }
 
 nav ul li a:hover {
-    color: var(--primary-color);
+    color: var(--hover-color);
 }
 
 main {
@@ -64,16 +77,18 @@ h1,
 h2,
 h3 {
     color: var(--secondary-color);
+    font-family: var(--feature-font);
     text-align: center;
 }
 
-.effortless {
+.feature {
+    font-family: var(--feature-font); /* Use the feature font */
     font-size: 2.5rem;
     text-align: center;
     margin-bottom: 2rem;
 }
 
-.effortless i {
+.feature i {
     color: var(--primary-color);
 }
 
@@ -119,27 +134,44 @@ a:hover {
     top: 0;
     bottom: 0;
     width: var(--sidebar-width);
-    background-color: var(--text-color);
-    color: var(--background-color);
-    padding: 1rem;
+    background-color: var(--navbar-color);
+    color: var(--text-color);
+    padding: 0px;
     padding-top: 5rem;
     overflow-y: auto;
     transition: all 0.3s ease;
     z-index: 999;
+    border-right: 2px solid var(--navbar-color);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
 }
 
 #sidebar.collapsed {
     width: var(--sidebar-collapsed-width);
     padding: 0;
+    border: none;
 }
 
-#sidebar.collapsed h3,
-#sidebar.collapsed ul {
+#sidebar.collapsed * {
     display: none;
 }
 
 #sidebar a {
     color: var(--background-color);
+}
+
+#sidebar ul {
+    display: flex; /* Use flexbox for the ul */
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center items horizontally */
+    padding: 0; /* Remove default padding */
+    margin: 0; /* Remove default margin */
+}
+
+#sidebar ul li {
+    width: 100%; /* Make li take full width */
+    text-align: center; /* Center text within li */
+    margin: 0.5rem 0; /* Add some vertical spacing between items */
+    list-style: none;
 }
 
 main {
@@ -168,4 +200,34 @@ main {
     body.sidebar-active main {
         pointer-events: none;
     }
+}
+
+#themeToggle {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+#themeToggle:hover {
+    color: var(--primary-color);
+}
+
+/* Add this to your existing styles.css */
+.dropdown {
+    display: none;
+    list-style-type: none;
+    padding-left: 1rem;
+}
+
+.dropdown-toggle {
+    cursor: pointer;
+    color: var(--header-color);
+    font-weight: bold;
+}
+
+.dropdown-toggle:hover {
+    text-decoration: underline;
 }

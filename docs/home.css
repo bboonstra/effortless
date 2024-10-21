@@ -1,0 +1,83 @@
+html,
+body {
+    height: 100%; /* Ensure the body takes full height */
+    overflow: hidden; /* Prevent default scrolling */
+}
+
+.section {
+    height: 100vh; /* Each section takes full viewport height */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    scroll-snap-align: start; /* Align sections for snapping */
+    padding: 20px;
+    text-align: center;
+}
+
+.section * {
+    max-width: 80%;
+}
+
+.section h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.section p {
+    font-size: 1.2rem;
+    margin: 0.5rem 0;
+}
+
+.section ul {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.section ul li {
+    font-size: 1.1rem;
+    margin: 0.5rem 0;
+    text-align: center;
+    width: 100%;
+}
+
+.cta-button {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.cta-button:hover {
+    background-color: color-mix(in srgb, var(--hover-color) 80%, var(--effortless-white));
+}
+
+.arrow {
+    font-size: 2rem;
+    color: var(--primary-color);
+    cursor: pointer;
+    position: fixed;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease, color 0.3s ease;
+}
+.up-arrow {
+    top: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.down-arrow {
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.show {
+    opacity: 1;
+}
