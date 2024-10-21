@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function () {
             <button id="sidebarToggle">☰</button>
             <ul>
                 <li><a href="Effortless/">Home</a></li>
-                <li><a href="Effortless/docs/">Docs</a></li>
+                <li><a href="/docs/">Docs</a></li>
                 <li><a href="https://pypi.org/project/Effortless/">PyPI</a></li>
                 <li><a href="https://github.com/bboonstra/Effortless">GitHub</a></li>
             </ul>
@@ -64,15 +64,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 <li>
                     <span class="dropdown-toggle">Getting Started</span>
                     <ul class="dropdown">
-                        <li><a href="Effortless/docs/quickstart.html">Quickstart</a></li>
+                        <li><a href="/docs/quickstart.html">Quickstart</a></li>
                     </ul>
                 </li>
                 <li>
                     <span class="dropdown-toggle">Usage</span>
                     <ul class="dropdown">
-                        <li><a href="Effortless/docs/effortless-usage.html">Effortless</a></li>
-                        <li><a href="Effortless/docs/basic-usage.html" target="_blank">Basic</a></li>
-                        <li><a href="Effortless/docs/advanced-usage.html" target="_blank">Advanced</a></li>
+                        <li><a href="/docs/effortless-usage.html">Effortless</a></li>
+                        <li><a href="/docs/basic-usage.html">Basic</a></li>
+                        <li><a href="/docs/advanced-usage.html">Advanced</a></li>
                     </ul>
                 </li>
             </ul>
@@ -165,16 +165,17 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 100);
 });
 
+const isLocalhost =
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1";
+
 function adjustLinks() {
+    if (!isLocalhost) return;
+
     var links = document.querySelectorAll("a");
-    const isLocalhost =
-        window.location.hostname === "localhost" ||
-        window.location.hostname === "127.0.0.1";
     links.forEach((link) => {
         var href = link.getAttribute("href");
-        if (isLocalhost) {
-            href = href.replace("Effortless", "");
-            link.setAttribute("href", href);
-        }
+        href = href.replace("Effortless", "");
+        link.setAttribute("href", href);
     });
 }
