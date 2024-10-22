@@ -31,6 +31,18 @@ p {
     width: auto;
     max-width: 100%;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    scrollbar-width: thin;
+    scrollbar-color: var(--tertiary-color) transparent;
+}
+
+.command-container::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.command-container::-webkit-scrollbar-thumb {
+    background-color: var(--tertiary-color);
+    border-radius: 4px;
 }
 
 .command-container pre,
