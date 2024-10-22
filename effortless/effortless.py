@@ -583,5 +583,59 @@ class EffortlessDB:
 
         return updated_count
 
+    def remove(self, condition: Query) -> bool:
+        """
+        Remove a single entry from the database that matches the given condition.
+
+        Args:
+            condition (Query): A Query object defining the condition to match.
+
+        Returns:
+            bool: True if an entry was removed, False if no matching entry was found.
+
+        Raises:
+            ValueError: If more than one entry matches the condition.
+        """
+        data = self._read_db()
+        matching_entries = [
+            entry for entry in data["content"] if condition.match(entry)
+        ]
+
+        if len(matching_entries) > 1:
+            raise ValueError(
+                "More than one entry matches the given condition. If you want to remove multiple entries at once, use erase() instead."
+            )
+        elif len(matching_entries) == 0:
+            return False
+
+        data["content"].remove(matching_entries[0])
+        self._write_db(data)
+        self._handle_backup()
+        return True
+
+    def erase(self, condition: Query) -> int:
+        """
+        Erase all entries from the database that match the given condition.
+
+        Args:
+            condition (Query): A Query object defining the condition to match.
+
+        Returns:
+            int: The number of entries that were removed.
+        """
+        data = self._read_db()
+        original_length = len(data["content"])
+        data["content"] = [
+            entry for entry in data["content"] if not condition.match(entry)
+        ]
+        removed_count = original_length - len(data["content"])
+
+        if removed_count > 0:
+            self._write_db(data)
+            self._handle_backup()
+            logger.debug(f"Erased {removed_count} entries from the database")
+
+        return removed_count
+
 
 db = EffortlessDB()
