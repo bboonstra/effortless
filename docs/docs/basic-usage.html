@@ -34,7 +34,8 @@
 
             <h2>Adding Entries to the Database</h2>
             <p>
-                Use <code>db.add()</code> to insert new entries into the database:
+                Use <code>db.add()</code> to insert new entries into the
+                database:
             </p>
             <!-- prettier-ignore -->
             <div class="command python">
@@ -53,10 +54,30 @@
                 print(result)  # Output: [{'name': 'Charlie', 'age': 35}]
             </div>
 
+            <h2>Updating Entries</h2>
+            <p>
+                Use <code>db.update()</code> to modify a single entry that
+                matches a condition:
+            </p>
+            <!-- prettier-ignore -->
+            <div class="command python">
+                db.update({"age": 36}, Field("name").equals("Charlie"))
+            </div>
+
+            <h2>Removing Entries</h2>
+            <p>
+                Use <code>db.remove()</code> to delete a single entry that
+                matches a condition:
+            </p>
+            <!-- prettier-ignore -->
+            <div class="command python">
+                db.remove(Field("name").equals("David"))
+            </div>
+
             <p>
                 This basic usage allows you to create a specific database
-                instance, add entries, and perform more advanced filtering
-                operations.
+                instance, add entries, perform filtering operations, and update
+                or remove individual entries.
             </p>
 
             <div class="button-container">

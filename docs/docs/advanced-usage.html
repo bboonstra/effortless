@@ -62,6 +62,31 @@
                 print(python_devs)
             </div>
 
+            <h2>Batch Updates</h2>
+            <p>
+                Use <code>db.batch()</code> to update multiple entries that
+                match a condition:
+            </p>
+            <!-- prettier-ignore -->
+            <div class="command python">
+                updated_count = db.batch(
+                ‎    {"status": "experienced"},
+                ‎    Field("skills").contains("Python") & Field("joined").less_than("2023-03-01")
+                )
+                print(f"Updated {updated_count} entries")
+            </div>
+
+            <h2>Erasing Multiple Entries</h2>
+            <p>
+                Use <code>db.erase()</code> to remove multiple entries that
+                match a condition:
+            </p>
+            <!-- prettier-ignore -->
+            <div class="command python">
+                removed_count = db.erase(Field("skills").contains("Java"))
+                print(f"Removed {removed_count} entries")
+            </div>
+
             <h2>Custom Queries</h2>
             <p>Create custom queries using the Query class:</p>
             <!-- prettier-ignore -->
