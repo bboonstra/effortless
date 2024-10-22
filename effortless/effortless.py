@@ -2,7 +2,7 @@
 import json
 import os
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, List
 import zlib
 import base64
 import threading
@@ -43,7 +43,7 @@ class EffortlessDB:
             dict: A dictionary with 'headers' (default configuration) and an empty 'content'.
         """
         ddb = EffortlessConfig.default_headers()
-        ddb["content"] = {}
+        ddb["content"] = []  # Changed to an empty list
         return ddb
 
     def set_directory(self, directory: str) -> None:
@@ -178,19 +178,19 @@ class EffortlessDB:
         self._write_db(data, write_in_readonly=True)
         self._update_config()
 
-    def get_all(self) -> Dict[str, Dict[str, Any]]:
+    def get_all(self) -> List[Dict[str, Any]]:
         """
         Retrieve all records from the database.
 
         This method returns all the data stored in the database, excluding the configuration.
-        Each item in the returned dictionary represents a record in the database.
+        The returned list contains all records in the database.
 
         Returns:
-            Dict[str, Dict[str, Any]]: A dictionary where keys are record IDs and values are the record data.
+            List[Dict[str, Any]]: A list where each item is a record in the database.
         """
         return self._read_db()["content"]
 
-    def filter(self, query: Query) -> Dict[str, Any]:
+    def filter(self, query: Query) -> List[Dict[str, Any]]:
         """
         Filter the database records based on a given query.
 
@@ -201,13 +201,9 @@ class EffortlessDB:
             query (Query): A Query object defining the filter criteria.
 
         Returns:
-            Dict[str, Any]: A dictionary of records that match the query criteria.
+            List[Dict[str, Any]]: A list of records that match the query criteria.
         """
-        results = {}
-        for key, item in self.get_all().items():
-            if query.match(item):
-                results[key] = item
-        return results
+        return [item for item in self.get_all() if query.match(item)]
 
     def add(self, item: dict) -> None:
         """
@@ -245,19 +241,16 @@ class EffortlessDB:
             raise ValueError("Item must be JSON-serializable")
 
         data = self._read_db()
-        new_key = str(max((int(k) for k in data["content"].keys()), default=0) + 1)
 
         if self.config.max_size:
-            current_size = os.path.getsize(self._storage_file) / (
-                1024 * 1024
-            )  # Size in MB
+            current_size = os.path.getsize(self._storage_file) / (1024 * 1024)  # Size in MB
             new_size = current_size + len(json.dumps(item)) / (1024 * 1024)
             if new_size > self.config.max_size:
                 raise ValueError(
                     f"The requested operation would increase the size of the database past the configured max db size ({self.config.max_size} MB)."
                 )
 
-        data["content"][new_key] = item
+        data["content"].append(item)
         self._write_db(data)
         self._handle_backup()
 
@@ -275,7 +268,7 @@ class EffortlessDB:
             Use this method with caution as it permanently deletes all data in the database. This will not wipe backups.
         """
         self._write_db(
-            {"headers": EffortlessConfig().to_dict(), "content": {}},
+            {"headers": EffortlessConfig().to_dict(), "content": []},
             write_in_readonly=wipe_readonly,
         )
         self._update_config()
@@ -299,7 +292,7 @@ class EffortlessDB:
         """
         try:
             if not os.path.exists(self._storage_file):
-                return {"headers": EffortlessConfig().to_dict(), "content": {}}
+                return {"headers": EffortlessConfig().to_dict(), "content": []}
 
             with open(self._storage_file, "rb") as f:
                 data = json.loads(f.read().decode())
