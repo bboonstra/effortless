@@ -17,15 +17,17 @@ class TestConfiguration(unittest.TestCase):
 
     def test_default_configuration(self):
         config = self.db.config
-        self.assertFalse(config.debug)
-        self.assertEqual(config.requires, [])
-        self.assertIsNone(config.max_size)
-        self.assertEqual(config.v, 1)
-        self.assertIsNone(config.backup)
-        self.assertEqual(config.backup_interval, 1)
-        self.assertFalse(config.encrypted)
-        self.assertFalse(config.compressed)
-        self.assertFalse(config.readonly)
+        self.assertFalse(config.debug, "Debug mode should be off by default")
+        self.assertEqual(config.requires, [], "No fields should be required by default")
+        self.assertIsNone(config.max_size, "Max size should be None by default")
+        self.assertEqual(config.v, 1, "Version should be 1 by default")
+        self.assertIsNone(config.backup, "Backup path should be None by default")
+        self.assertEqual(
+            config.backup_interval, 1, "Backup interval should be 1 by default"
+        )
+        self.assertFalse(config.encrypted, "Encryption should be off by default")
+        self.assertFalse(config.compressed, "Compression should be off by default")
+        self.assertFalse(config.readonly, "Read-only mode should be off by default")
 
     def test_configure_method(self):
         new_config = {
@@ -42,25 +44,38 @@ class TestConfiguration(unittest.TestCase):
         self.db.configure(EffortlessConfig(new_config))
 
         config = self.db.config
-        self.assertTrue(config.debug)
-        self.assertEqual(config.requires, ["name", "age"])
-        self.assertEqual(config.max_size, 100)
-        self.assertEqual(config.v, 1)
-        self.assertEqual(config.backup, "/backup/path")
-        self.assertEqual(config.backup_interval, 5)
-        self.assertFalse(config.encrypted)
-        self.assertFalse(config.compressed)
-        self.assertTrue(config.readonly)
+        self.assertTrue(config.debug, "Debug mode should be on after configuration")
+        self.assertEqual(
+            config.requires,
+            ["name", "age"],
+            "Required fields should be set to name and age",
+        )
+        self.assertEqual(config.max_size, 100, "Max size should be set to 100")
+        self.assertEqual(config.v, 1, "Version should remain 1")
+        self.assertEqual(
+            config.backup, "/backup/path", "Backup path should be set to /backup/path"
+        )
+        self.assertEqual(
+            config.backup_interval, 5, "Backup interval should be set to 5"
+        )
+        self.assertFalse(config.encrypted, "Encryption should remain off")
+        self.assertFalse(config.compressed, "Compression should remain off")
+        self.assertTrue(config.readonly, "Read-only mode should be on")
 
     def test_invalid_configuration(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(
+            TypeError,
+            msg="Configuring with a non-EffortlessConfig object should raise TypeError",
+        ):
             self.db.configure("invalid")  # type: ignore
 
     def test_required_fields(self):
         self.db.configure(EffortlessConfig({"rq": ["name"]}))
         self.db.add({"name": "Alice", "age": 30})  # This should work
-
-        with self.assertRaises(ValueError):
+        with self.assertRaises(
+            ValueError,
+            msg="Adding an entry without a required field should raise ValueError",
+        ):
             self.db.add({"age": 25})  # This should raise an error
 
     def test_max_size_limit(self):
@@ -72,13 +87,17 @@ class TestConfiguration(unittest.TestCase):
 
         # This should raise an error
         large_data = {"large": "x" * 1000}  # Approximately 1 KB
-        with self.assertRaises(ValueError):
+        with self.assertRaises(
+            ValueError, msg="Adding data exceeding max size should raise ValueError"
+        ):
             self.db.add(large_data)
 
     def test_readonly_mode(self):
         self.db = EffortlessDB()
         self.db.configure(EffortlessConfig({"ro": True}))
-        with self.assertRaises(ValueError):
+        with self.assertRaises(
+            ValueError, msg="Adding to a read-only database should raise ValueError"
+        ):
             self.db.add({"name": "Alice"})
 
     def test_configuration_persistence(self):
@@ -91,17 +110,31 @@ class TestConfiguration(unittest.TestCase):
         new_db.set_storage("test_db")
 
         config = new_db.config
-        self.assertTrue(config.debug)
-        self.assertEqual(config.requires, ["name"])
-        self.assertEqual(config.max_size, 100)
-        self.assertEqual(config.v, 1)
+        self.assertTrue(
+            config.debug, "Debug mode should persist across database instances"
+        )
+        self.assertEqual(
+            config.requires,
+            ["name"],
+            "Required fields should persist across database instances",
+        )
+        self.assertEqual(
+            config.max_size, 100, "Max size should persist across database instances"
+        )
+        self.assertEqual(
+            config.v, 1, "Version should persist across database instances"
+        )
 
     def test_invalid_configuration_values(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(
+            ValueError, msg="Negative max size should raise ValueError"
+        ):
             EffortlessConfig({"ms": -1})
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValueError, msg="Version 0 should raise ValueError"):
             EffortlessConfig({"v": 0})
-        with self.assertRaises(ValueError):
+        with self.assertRaises(
+            ValueError, msg="Backup interval 0 should raise ValueError"
+        ):
             EffortlessConfig({"bpi": 0})
 
     def test_backup_interval(self):
@@ -115,7 +148,9 @@ class TestConfiguration(unittest.TestCase):
         self.db.configure(EffortlessConfig(new_config))
 
         # Assert that the backup path is properly configured
-        self.assertEqual(self.db.config.backup, backup_path)
+        self.assertEqual(
+            self.db.config.backup, backup_path, "Backup path should be set correctly"
+        )
 
         # Add an item to trigger a backup
         self.db.add({"name": "Alice", "age": 30})

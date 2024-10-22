@@ -40,70 +40,70 @@ class TestFilter(unittest.TestCase):
 
     def test_equals(self):
         result = self.db.filter(Field("name").equals("Alice"))
-        self.assertEqual(len(result), 1)
-        self.assertEqual(result[0]["name"], "Alice")
+        self.assertEqual(len(result), 1, "There should be exactly one entry with name 'Alice'")
+        self.assertEqual(result[0]["name"], "Alice", "The filtered entry should have the name 'Alice'")
 
     def test_contains_case_sensitive(self):
         result = self.db.filter(Field("skills").contains("Python"))
-        self.assertEqual(len(result), 2)
-        self.assertTrue(any(item["id"] == 1 for item in result))
-        self.assertTrue(any(item["id"] == 3 for item in result))
+        self.assertEqual(len(result), 2, "There should be two entries with 'Python' in their skills")
+        self.assertTrue(any(item["id"] == 1 for item in result), "Alice (id 1) should be in the result")
+        self.assertTrue(any(item["id"] == 3 for item in result), "Charlie (id 3) should be in the result")
 
     def test_contains_case_insensitive(self):
         result = self.db.filter(
             Field("skills").contains("python", case_sensitive=False)
         )
-        self.assertEqual(len(result), 2)
-        self.assertTrue(any(item["id"] == 1 for item in result))
-        self.assertTrue(any(item["id"] == 3 for item in result))
+        self.assertEqual(len(result), 2, "There should be two entries with 'python' (case-insensitive) in their skills")
+        self.assertTrue(any(item["id"] == 1 for item in result), "Alice (id 1) should be in the result")
+        self.assertTrue(any(item["id"] == 3 for item in result), "Charlie (id 3) should be in the result")
 
     def test_startswith_case_sensitive(self):
         result = self.db.filter(Field("name").startswith("A"))
-        self.assertEqual(len(result), 1)
-        self.assertEqual(result[0]["name"], "Alice")
+        self.assertEqual(len(result), 1, "There should be one entry with a name starting with 'A'")
+        self.assertEqual(result[0]["name"], "Alice", "The filtered entry should be 'Alice'")
 
     def test_startswith_case_insensitive(self):
         result = self.db.filter(Field("name").startswith("a", case_sensitive=False))
-        self.assertEqual(len(result), 1)
-        self.assertEqual(result[0]["name"], "Alice")
+        self.assertEqual(len(result), 1, "There should be one entry with a name starting with 'a' (case-insensitive)")
+        self.assertEqual(result[0]["name"], "Alice", "The filtered entry should be 'Alice'")
 
     def test_endswith(self):
         result = self.db.filter(Field("name").endswith("e"))
-        self.assertEqual(len(result), 2)
-        self.assertTrue(any(item["id"] == 1 for item in result))
-        self.assertTrue(any(item["id"] == 3 for item in result))
+        self.assertEqual(len(result), 2, "There should be two entries with names ending in 'e'")
+        self.assertTrue(any(item["id"] == 1 for item in result), "Alice (id 1) should be in the result")
+        self.assertTrue(any(item["id"] == 3 for item in result), "Charlie (id 3) should be in the result")
 
     def test_greater_than(self):
         result = self.db.filter(Field("age").greater_than(30))
-        self.assertEqual(len(result), 1)
-        self.assertEqual(result[0]["name"], "Charlie")
+        self.assertEqual(len(result), 1, "There should be one entry with age greater than 30")
+        self.assertEqual(result[0]["name"], "Charlie", "The filtered entry should be 'Charlie'")
 
     def test_less_than(self):
         result = self.db.filter(Field("age").less_than(30))
-        self.assertEqual(len(result), 1)
-        self.assertEqual(result[0]["name"], "Bob")
+        self.assertEqual(len(result), 1, "There should be one entry with age less than 30")
+        self.assertEqual(result[0]["name"], "Bob", "The filtered entry should be 'Bob'")
 
     def test_and_query(self):
         result = self.db.filter(
             Field("age").greater_than(25) & Field("skills").contains("Python")
         )
-        self.assertEqual(len(result), 2)
-        self.assertTrue(any(item["name"] == "Alice" for item in result))
-        self.assertTrue(any(item["name"] == "Charlie" for item in result))
+        self.assertEqual(len(result), 2, "There should be two entries with age > 25 and 'Python' in skills")
+        self.assertTrue(any(item["name"] == "Alice" for item in result), "Alice should be in the result")
+        self.assertTrue(any(item["name"] == "Charlie" for item in result), "Charlie should be in the result")
 
     def test_or_query(self):
         result = self.db.filter(
             Field("age").less_than(26) | Field("name").equals("Charlie")
         )
-        self.assertEqual(len(result), 2)
-        self.assertTrue(any(item["name"] == "Bob" for item in result))
-        self.assertTrue(any(item["name"] == "Charlie" for item in result))
+        self.assertEqual(len(result), 2, "There should be two entries with age < 26 or name 'Charlie'")
+        self.assertTrue(any(item["name"] == "Bob" for item in result), "Bob should be in the result")
+        self.assertTrue(any(item["name"] == "Charlie" for item in result), "Charlie should be in the result")
 
     def test_nested_field(self):
         result = self.db.filter(Field("address.country").equals("USA"))
-        self.assertEqual(len(result), 2)
-        self.assertTrue(any(item["name"] == "Alice" for item in result))
-        self.assertTrue(any(item["name"] == "Charlie" for item in result))
+        self.assertEqual(len(result), 2, "There should be two entries with country 'USA'")
+        self.assertTrue(any(item["name"] == "Alice" for item in result), "Alice should be in the result")
+        self.assertTrue(any(item["name"] == "Charlie" for item in result), "Charlie should be in the result")
 
     def test_complex_query(self):
         result = self.db.filter(
@@ -113,30 +113,30 @@ class TestFilter(unittest.TestCase):
                 & Field("address.city").equals("London")
             )
         )
-        self.assertEqual(len(result), 3)
-        self.assertTrue(any(item["name"] == "Alice" for item in result))
-        self.assertTrue(any(item["name"] == "Bob" for item in result))
-        self.assertTrue(any(item["name"] == "Charlie" for item in result))
+        self.assertEqual(len(result), 3, "There should be three entries matching the complex query")
+        self.assertTrue(any(item["name"] == "Alice" for item in result), "Alice should be in the result")
+        self.assertTrue(any(item["name"] == "Bob" for item in result), "Bob should be in the result")
+        self.assertTrue(any(item["name"] == "Charlie" for item in result), "Charlie should be in the result")
 
     def test_lambda_query(self):
         result = self.db.filter(
             Query(lambda item: len(item["skills"]) > 1 and item["age"] < 35)
         )
-        self.assertEqual(len(result), 2)
-        self.assertTrue(any(item["name"] == "Alice" for item in result))
-        self.assertTrue(any(item["name"] == "Bob" for item in result))
+        self.assertEqual(len(result), 2, "There should be two entries with more than 1 skill and age < 35")
+        self.assertTrue(any(item["name"] == "Alice" for item in result), "Alice should be in the result")
+        self.assertTrue(any(item["name"] == "Bob" for item in result), "Bob should be in the result")
 
     def test_empty_result(self):
         result = self.db.filter(Field("name").equals("David"))
-        self.assertEqual(len(result), 0)
+        self.assertEqual(len(result), 0, "There should be no entries with name 'David'")
 
     def test_invalid_field(self):
         result = self.db.filter(Field("invalid_field").equals("value"))
-        self.assertEqual(len(result), 0)
+        self.assertEqual(len(result), 0, "There should be no entries with an 'invalid_field'")
 
     def test_invalid_nested_field(self):
         result = self.db.filter(Field("address.invalid_field").equals("value"))
-        self.assertEqual(len(result), 0)
+        self.assertEqual(len(result), 0, "There should be no entries with an 'address.invalid_field'")
 
     def test_multiple_conditions(self):
         result = self.db.filter(
@@ -144,19 +144,19 @@ class TestFilter(unittest.TestCase):
             & Field("skills").contains("Python")
             & Field("address.country").equals("USA")
         )
-        self.assertEqual(len(result), 2)
-        self.assertTrue(any(item["name"] == "Alice" for item in result))
-        self.assertTrue(any(item["name"] == "Charlie" for item in result))
+        self.assertEqual(len(result), 2, "There should be two entries matching all three conditions")
+        self.assertTrue(any(item["name"] == "Alice" for item in result), "Alice should be in the result")
+        self.assertTrue(any(item["name"] == "Charlie" for item in result), "Charlie should be in the result")
 
     def test_complex_nested_query(self):
         query = (Field("age").greater_than(25) & Field("skills").contains("Python")) | (
             Field("name").startswith("B")
         )
         result = self.db.filter(query)
-        self.assertEqual(len(result), 3)
-        self.assertTrue(any(item["name"] == "Alice" for item in result))
-        self.assertTrue(any(item["name"] == "Bob" for item in result))
-        self.assertTrue(any(item["name"] == "Charlie" for item in result))
+        self.assertEqual(len(result), 3, "There should be three entries matching the complex nested query")
+        self.assertTrue(any(item["name"] == "Alice" for item in result), "Alice should be in the result")
+        self.assertTrue(any(item["name"] == "Bob" for item in result), "Bob should be in the result")
+        self.assertTrue(any(item["name"] == "Charlie" for item in result), "Charlie should be in the result")
 
     def test_nested_field_query(self):
         self.db.wipe()
@@ -164,12 +164,12 @@ class TestFilter(unittest.TestCase):
         self.db.add({"user": {"name": "Bob", "age": 25}})
 
         result = self.db.filter(Field("user.name").equals("Alice"))
-        self.assertEqual(len(result), 1)
-        self.assertEqual(result[0]["user"]["name"], "Alice")
+        self.assertEqual(len(result), 1, "There should be one entry with user.name 'Alice'")
+        self.assertEqual(result[0]["user"]["name"], "Alice", "The filtered entry should have user.name 'Alice'")
 
         result = self.db.filter(Field("user.age").less_than(28))
-        self.assertEqual(len(result), 1)
-        self.assertEqual(result[0]["user"]["name"], "Bob")
+        self.assertEqual(len(result), 1, "There should be one entry with user.age < 28")
+        self.assertEqual(result[0]["user"]["name"], "Bob", "The filtered entry should be Bob")
 
 
 class TestAdvancedSearch(unittest.TestCase):
