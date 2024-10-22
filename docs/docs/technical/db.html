@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Effortless - Technical</title>
+        <link rel="stylesheet" href="../../styles.css" />
+        <link rel="stylesheet" href="../docs.css" />
+        <link rel="stylesheet" href="technical.css" />
+        <script src="../../templating.js"></script>
+        <link rel="icon" type="image/png" href="../../favicon.ico" />
+        <script src="../docs.js" type="module"></script>
+        <script src="technical.js" type="module"></script>
+    </head>
+    <body>
+        <main>
+            <h1 class="technical-title">EffortlessDB</h1>
+            <p class="object-description">
+                EffortlessDB is the main class for interacting with the
+                Effortless database. It provides methods for initializing,
+                configuring, and performing operations on the database.
+            </p>
+            <h3 class="prop-header">Properties</h3>
+            <div class="properties-container">
+                <div class="property">
+                    <h4 class="prop-subheader" prop-type="EffortlessConfig">
+                        config
+                    </h4>
+                    <p class="prop-description">
+                        An instance of EffortlessConfig that holds the configuration
+                        settings for the database.
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">db.config</div>
+                </div>
+            </div>
+            <h2 class="method-header">Methods</h2>
+            <div class="methods-container">
+                <div class="method">
+                    <h4
+                        class="method-subheader"
+                        method-parameters='db_name: str = "db"'
+                    >
+                        __init__
+                    </h4>
+                    <p class="method-description">
+                        Initializes an EffortlessDB instance with the given database
+                        name. If no name is provided, it defaults to "db".
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        db = EffortlessDB("my_database")
+                    </div>
+                </div>
+                <div class="method">
+                    <h4 class="method-subheader" method-parameters="directory: str">
+                        set_directory
+                    </h4>
+                    <p class="method-description">
+                        Sets the directory for the database file. Raises TypeError
+                        if the directory is not a string, and ValueError if the
+                        directory is empty or does not exist.
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        db.set_directory("/path/to/database/directory")
+                    </div>
+                </div>
+                <div class="method">
+                    <h4 class="method-subheader" method-parameters="db_name: str">
+                        set_storage
+                    </h4>
+                    <p class="method-description">
+                        Sets the storage file for the database. The actual file will
+                        be named '{db_name}.effortless'. Raises TypeError if db_name
+                        is not a string, and ValueError if it's empty or contains
+                        invalid characters.
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        db.set_storage("my_database")
+                    </div>
+                </div>
+                <div class="method">
+                    <h4
+                        class="method-subheader"
+                        method-parameters="new_config: EffortlessConfig"
+                    >
+                        configure
+                    </h4>
+                    <p class="method-description">
+                        Updates the database configuration with a new
+                        EffortlessConfig object. Raises TypeError if new_config is
+                        not an EffortlessConfig object.
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        db.configure(new_config)
+                    </div>
+                </div>
+                <div class="method">
+                    <h4
+                        class="method-subheader"
+                        method-parameters=""
+                        method-returns="List[Dict[str, Any]]"
+                    >
+                        get_all
+                    </h4>
+                    <p class="method-description">
+                        Retrieves all records from the database, returning a list
+                        where each entry is a record in the database.
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        all_records = db.get_all()
+                    </div>
+                </div>
+                <div class="method">
+                    <h4
+                        class="method-subheader"
+                        method-parameters="query: Query"
+                        method-returns="List[Dict[str, Any]]"
+                    >
+                        filter
+                    </h4>
+                    <p class="method-description">
+                        Filters the database records based on a given Query object,
+                        returning a list of records that match the query criteria.
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        filtered_records = db.filter(query)
+                    </div>
+                </div>
+                <div class="method">
+                    <h4 class="method-subheader" method-parameters="entry: dict">
+                        add
+                    </h4>
+                    <p class="method-description">
+                        Adds a new entry to the database. Raises TypeError if the
+                        entry is not a dictionary, ValueError if a required field is
+                        missing, if the entry is not JSON-serializable, or if adding
+                        the entry would exceed the max size limit.
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        db.add({"name": "John", "age": 30})
+                    </div>
+                </div>
+                <div class="method">
+                    <h4
+                        class="method-subheader"
+                        method-parameters="wipe_readonly: bool = False"
+                    >
+                        wipe
+                    </h4>
+                    <p class="method-description">
+                        Clears all data from the database, resetting it to its
+                        initial state. If wipe_readonly is True, it allows wiping
+                        even if the database is in read-only mode.
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">db.wipe()</div>
+                </div>
+                <div class="method">
+                    <h4
+                        class="method-subheader"
+                        method-parameters="timeout: float | None = None"
+                        method-returns="bool"
+                    >
+                        finish_backup
+                    </h4>
+                    <p class="method-description">
+                        Waits for any ongoing backup operation to complete. Returns
+                        True if the backup completed (or there was no backup
+                        running), False if the timeout was reached before the backup
+                        completed.
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        backup_completed = db.finish_backup(timeout=30)
+                    </div>
+                </div>
+                <div class="method">
+                    <h4
+                        class="method-subheader"
+                        method-parameters="update_data: Dict[str, Any], condition: Query"
+                        method-returns="bool"
+                    >
+                        update
+                    </h4>
+                    <!-- prettier-ignore -->
+                    <p class="method-description">
+                        Updates a single entry in the database that matches the
+                        given condition. Returns True if an entry was updated, False
+                        if no matching entry was found. Raises ValueError if more
+                        than one entry matches the condition.
+                    </p>
+                    <div class="command python example-usage">
+                        updated = db.update({"age": 31}, Query().name == "John")
+                    </div>
+                </div>
+                <div class="method">
+                    <h4
+                        class="method-subheader"
+                        method-parameters="update_data: Dict[str, Any], condition: Query"
+                        method-returns="int"
+                    >
+                        batch
+                    </h4>
+                    <p class="method-description">
+                        Updates all entries in the database that match the given
+                        condition. Returns the number of entries that were updated.
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        updated_count = db.batch({"status": "active"}, Query().age > 18)
+                    </div>
+                </div>
+                <div class="method">
+                    <h4
+                        class="method-subheader"
+                        method-parameters="condition: Query"
+                        method-returns="bool"
+                    >
+                        remove
+                    </h4>
+                    <p class="method-description">
+                        Removes a single entry from the database that matches the
+                        given condition. Returns True if an entry was removed, False
+                        if no matching entry was found. Raises ValueError if more
+                        than one entry matches the condition.
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        removed = db.remove(Query().name == "John")
+                    </div>
+                </div>
+                <div class="method">
+                    <h4
+                        class="method-subheader"
+                        method-parameters="condition: Query"
+                        method-returns="int"
+                    >
+                        erase
+                    </h4>
+                    <p class="method-description">
+                        Erases all entries from the database that match the given
+                        condition. Returns the number of entries that were removed.
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        erased_count = db.erase(Query().age < 18)
+                    </div>
+                </div>
+            </div>
+            <div class="button-container">
+                <a href="../index.html" class="tab tab-back">Docs Home</a>
+                <a href="config.html" class="tab tab-forward"
+                    >EffortlessConfig</a
+                >
+            </div>
+        </main>
+    </body>
+</html>

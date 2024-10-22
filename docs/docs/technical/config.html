@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Effortless - Technical</title>
+        <link rel="stylesheet" href="../../styles.css" />
+        <link rel="stylesheet" href="../docs.css" />
+        <link rel="stylesheet" href="technical.css" />
+        <script src="../../templating.js"></script>
+        <link rel="icon" type="image/png" href="../../favicon.ico" />
+        <script src="../docs.js" type="module"></script>
+        <script src="technical.js" type="module"></script>
+    </head>
+    <body>
+        <main>
+            <h1 class="technical-title">EffortlessConfig</h1>
+            <p class="object-description">
+                EffortlessConfig is the configuration class for EffortlessDB. It
+                holds various configuration options for an EffortlessDB
+                instance.
+            </p>
+            <h3 class="prop-header">Properties</h3>
+            <div class="properties-container">
+                <div class="property">
+                    <h4 class="prop-subheader" prop-type="bool">debug</h4>
+                    <p class="prop-description">
+                        Enable debug mode. Defaults to False.
+                    </p>
+                </div>
+                <div class="property">
+                    <h4 class="prop-subheader" prop-type="List[str]">requires</h4>
+                    <p class="prop-description">
+                        List of required fields for each entry. Defaults to an empty
+                        list.
+                    </p>
+                </div>
+                <div class="property">
+                    <h4 class="prop-subheader" prop-type="Optional[int]">
+                        max_size
+                    </h4>
+                    <p class="prop-description">
+                        Maximum size of the database in MB. Defaults to None (no
+                        limit).
+                    </p>
+                </div>
+                <div class="property">
+                    <h4 class="prop-subheader" prop-type="int">v</h4>
+                    <p class="prop-description">
+                        Version of the configuration. Always 1 for now.
+                    </p>
+                </div>
+                <div class="property">
+                    <h4 class="prop-subheader" prop-type="Optional[str]">backup</h4>
+                    <p class="prop-description">
+                        Path to backup location. Defaults to None (no backup).
+                    </p>
+                </div>
+                <div class="property">
+                    <h4 class="prop-subheader" prop-type="int">backup_interval</h4>
+                    <p class="prop-description">
+                        Number of operations between backups. Defaults to 1.
+                    </p>
+                </div>
+                <div class="property">
+                    <h4 class="prop-subheader" prop-type="bool">encrypted</h4>
+                    <p class="prop-description">
+                        Whether the database should be encrypted. Defaults to False.
+                    </p>
+                </div>
+                <div class="property">
+                    <h4 class="prop-subheader" prop-type="bool">compressed</h4>
+                    <p class="prop-description">
+                        Whether the database should be compressed. Defaults to
+                        False.
+                    </p>
+                </div>
+                <div class="property">
+                    <h4 class="prop-subheader" prop-type="bool">readonly</h4>
+                    <p class="prop-description">
+                        Whether the database is in read-only mode. Defaults to
+                        False.
+                    </p>
+                </div>
+            </div>
+            <h2 class="method-header">Methods</h2>
+            <div class="methods-container">
+                <div class="method">
+                    <h4
+                        class="method-subheader"
+                        method-parameters="config: Dict[str, Any] = {}"
+                    >
+                        __init__
+                    </h4>
+                    <p class="method-description">
+                        Initializes an EffortlessConfig instance with the given
+                        configuration options.
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        config = EffortlessConfig({"debug": True, "max_size": 100})
+                    </div>
+                </div>
+                <div class="method">
+                    <h4 class="method-subheader" method-parameters="">_validate</h4>
+                    <p class="method-description">
+                        Validates the configuration values. Raises ValueError if any
+                        configuration value is invalid.
+                    </p>
+                </div>
+                <div class="method">
+                    <h4
+                        class="method-subheader"
+                        method-parameters=""
+                        method-returns="Dict[str, Any]"
+                    >
+                        to_dict
+                    </h4>
+                    <p class="method-description">
+                        Converts the configuration to a dictionary representation.
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        config_dict = config.to_dict()
+                    </div>
+                </div>
+                <div class="method">
+                    <h4
+                        class="method-subheader"
+                        method-parameters=""
+                        method-returns="Dict[str, Dict[str, Any]]"
+                    >
+                        default_headers
+                    </h4>
+                    <p class="method-description">
+                        Creates a dictionary with default headers. Mainly used for
+                        internal unit testing.
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        default_headers = EffortlessConfig.default_headers()
+                    </div>
+                </div>
+            </div>
+            <div class="button-container">
+                <a href="effortlessdb.html" class="tab tab-back">EffortlessDB</a>
+                <a href="fields.html" class="tab tab-forward">Fields</a>
+            </div>
+        </main>
+    </body>
+</html>

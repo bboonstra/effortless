@@ -1,0 +1,143 @@
+.technical-title {
+    color: var(--primary-color);
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.prop-header,
+.method-header {
+    color: var(--text-color);
+    font-size: 1.8rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.prop-subheader,
+.method-subheader {
+    color: var(--primary-color);
+    font-size: 1.4rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: fit-content;
+}
+
+.prop-description,
+.method-description {
+    margin-bottom: 1rem;
+    word-wrap: break-word;
+    max-width: 300px;
+    overflow-wrap: break-word;
+}
+
+.property,
+.method {
+    margin: 0px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid var(--tertiary-color);
+    transition: all 0.3s ease;
+    max-width: fit-content;
+}
+
+.properties-container,
+.methods-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    width: 100%;
+}
+
+.property,
+.method {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid var(--tertiary-color);
+    transition: all 0.3s ease;
+    display: flexbox;
+    flex: auto;
+    max-width: 100%;
+    min-width: fit-content;
+    box-sizing: border-box;
+}
+
+.property > *,
+.method > * {
+    flex: 1 0 auto;
+    min-width: 0;
+}
+
+.prop-subheader,
+.method-subheader {
+    margin-top: 0;
+}
+
+.example-usage {
+    margin-top: 10px;
+    border-left: 4px solid var(--primary-color);
+    word-break: break-word;
+}
+
+.formatted-attr {
+    display: inline-block;
+    font-size: 0.8em;
+    margin-right: 10px;
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
+.prop-type {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+}
+
+.method-parameters {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+}
+
+.method-returns {
+    background-color: var(--tertiary-color);
+    color: var(--background-color);
+}
+
+@media (max-width: 768px) {
+    .technical-title {
+        font-size: 2rem;
+    }
+
+    .prop-header,
+    .method-header {
+        font-size: 1.5rem;
+    }
+
+    .prop-subheader,
+    .method-subheader {
+        font-size: 1.2rem;
+    }
+
+    .property,
+    .method {
+        flex: 1 1 100%;
+        max-width: 100%;
+    }
+
+    .example-usage {
+        font-size: 0.8rem;
+    }
+}
+
+.property:hover,
+.method:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+}

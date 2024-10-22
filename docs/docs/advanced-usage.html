@@ -15,35 +15,44 @@
             <h1 class="feature">Advanced Usage</h1>
             <p>
                 For those who want more control and advanced features,
-                Effortless offers powerful capabilities. Here's how to use
+                Effortless offers powerful capabilities. You should have a
+                strong understanding of Python for this! Here's how to use
                 Effortless with advanced features:
             </p>
 
-            <h2>Importing Advanced Components</h2>
-            <p>
-                Start by importing the necessary advanced components from
-                Effortless:
-            </p>
+            <h2>You'll Need These</h2>
             <!-- prettier-ignore -->
             <div class="command python">
                 from effortless import EffortlessDB, EffortlessConfig, Field, Query
             </div>
 
             <h2>Creating a Custom Database Instance</h2>
-            <p>Create a new Effortless instance with a custom directory:</p>
+            <p>
+                You can create a Effortless instances with custom directories
+                and filenames.
+            </p>
             <!-- prettier-ignore -->
             <div class="command python">
                 db = EffortlessDB("advanced_db")
                 db.set_directory("/path/to/custom/directory")
             </div>
 
-            <p class="command-instructions">
-                Change "/path/to/custom/directory" to the path of where you'd
-                like the db to be stored.
-            </p>
+            <h2>Configuring the Database</h2>
+            <p>You can futher customize the database with a configuration:</p>
+            <!-- prettier-ignore -->
+            <div class="command python">
+                config = EffortlessConfig()
+                config.readonly = True
+                db.configure(config)
+                # The database contents are now read-only
+                db.add({"Anything": "will not work"})  # Raises an error
+            </div>
 
-            <h2>Adding Multiple Entries</h2>
-            <p>Add multiple entries with more complex data structures:</p>
+            <h2>Adding Entries</h2>
+            <p>
+                You can put pretty much anything in an entry, and Effortless
+                will interperet structures like dates, lists, etc.
+            </p>
             <!-- prettier-ignore -->
             <div class="command python">
                 db.add({"id": 1, "name": "Eve", "skills": ["Python", "JavaScript"], "joined": "2023-01-15"})
@@ -52,82 +61,47 @@
             </div>
 
             <h2>Complex Filtering</h2>
-            <p>Use advanced filtering techniques to find specific entries:</p>
-            <!-- prettier-ignore -->
-            <div class="command python">
-                python_devs = db.filter(
-                ‎     Field("skills").contains("Python") & 
-                ‎     Field("joined").between_dates("2023-01-01", "2023-02-28")
-                )
-                print(python_devs)
-            </div>
-
-            <h2>Batch Updates</h2>
             <p>
-                Use <code>db.batch()</code> to update multiple entries that
-                match a condition:
+                Use advanced filtering techniques with Fields to find specific
+                entries. For example, to find anyone who knows Python and joined
+                in Jan/Feb:
             </p>
             <!-- prettier-ignore -->
             <div class="command python">
-                updated_count = db.batch(
+                db.filter(
+                ‎     Field("skills").contains("Python") & 
+                ‎     Field("joined").between_dates("2023-01-01", "2023-02-28")
+                )
+            </div>
+
+            <h2>Batch Updates</h2>
+            <p>You can update multiple entries that match a condition:</p>
+            <!-- prettier-ignore -->
+            <div class="command python">
+                db.batch(
                 ‎    {"status": "experienced"},
                 ‎    Field("skills").contains("Python") & Field("joined").less_than("2023-03-01")
                 )
-                print(f"Updated {updated_count} entries")
             </div>
 
             <h2>Erasing Multiple Entries</h2>
             <p>
-                Use <code>db.erase()</code> to remove multiple entries that
+                You can also <code>erase</code> to remove multiple entries that
                 match a condition:
             </p>
             <!-- prettier-ignore -->
             <div class="command python">
-                removed_count = db.erase(Field("skills").contains("Java"))
-                print(f"Removed {removed_count} entries")
+                db.erase(Field("skills").contains("Java"))
             </div>
 
-            <h2>Custom Queries</h2>
-            <p>Create custom queries using the Query class:</p>
-            <!-- prettier-ignore -->
-            <div class="command python">
-                custom_query = Query(lambda entry: len(entry["skills"]) > 1 and "Python" in entry["skills"])
-                multi_skill_python_devs = db.filter(custom_query)
-                print(multi_skill_python_devs)
-            </div>
-
-            <h2>Configuring the Database</h2>
-            <p>Update the database configuration for advanced settings:</p>
-            <!-- prettier-ignore -->
-            <div class="command python">
-                db.configure(EffortlessConfig({"readonly": True}))
-                # The database contents are now read-only
-                db.add({"Anything": "will not work"})  # Raises an error
-            </div>
-
-            <h2>Advanced Filtering Capabilities</h2>
-            <p>Effortless 1.1 introduces powerful filtering capabilities:</p>
-            <!-- prettier-ignore -->
-            <div class="command python">
-                result = db.filter(
-                ‎     (Field("age").greater_than(25) & Field("skills").contains("Python")) |
-                ‎     Field("name").startswith("A")
-                )
-            </div>
-
-            <p>You can also use custom functions with the `passes` method:</p>
+            <h2>Custom conditions</h2>
+            <p>You can write your own complex checks and use them in <code>Field.passes()</code>.</p>
             <!-- prettier-ignore -->
             <div class="command python">
                 def is_experienced(skills):
                 ‎    return len(skills) > 3
 
                 result = db.filter(Field("skills").passes(is_experienced))
-            </div>
-
-            <p>Check the type of a field:</p>
-            <!-- prettier-ignore -->
-            <div class="command python">
-                result = db.filter(Field("age").is_type(int))
             </div>
 
             <p>
