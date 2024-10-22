@@ -19,7 +19,8 @@
     --body-font: "Arial", sans-serif; /* Add your body font here */
 }
 
-* { /* Change colors smoothly for theme changes */
+* {
+    /* Change colors smoothly for theme changes */
     transition: color 0.3s ease, background-color 0.3s ease;
 }
 
@@ -246,9 +247,8 @@ main {
 .no-transition {
     transition: none !important;
 }
-
-.tab-button {
-    flex: 1 1 100%;
+.tab {
+    flex: 1;
     padding: 15px 20px;
     background-color: var(--navbar-color);
     color: var(--background-color);
@@ -263,9 +263,20 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    min-width: 100px;
 }
 
-.tab-button a {
+.tab.minimal {
+    flex: 0 1 auto;
+    min-width: fit-content;
+    padding: 5px 10px;
+    border-radius: 10px;
+}
+
+.tab a {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -275,62 +286,75 @@ main {
     color: inherit;
 }
 
-.tab-button:hover {
+.tab:hover {
     background-color: var(--hover-color);
     color: var(--effortless-gray);
 }
 
-.tab-button-back,
-.tab-button-forward {
+.tab-back,
+.tab-forward {
     position: relative;
-    padding-left: 35px;
-    padding-right: 35px;
 }
 
-.tab-button-back::before,
-.tab-button-forward::after {
-    content: '';
+.tab-back {
+    padding-left: 40px !important;
+}
+
+.tab-forward {
+    padding-right: 40px !important;
+}
+
+.tab-back::before,
+.tab-forward::after {
+    content: "";
     position: absolute;
     top: 50%;
     width: 0;
     height: 0;
     border-top: 8px solid transparent;
     border-bottom: 8px solid transparent;
+    transform: translateY(-50%);
 }
 
-.tab-button-back::before {
+.tab-back::before {
     left: 15px;
     border-right: 8px solid var(--background-color);
-    transform: translateY(-50%);
 }
 
-.tab-button-forward::after {
+.tab-forward::after {
     right: 15px;
     border-left: 8px solid var(--background-color);
-    transform: translateY(-50%);
 }
 
-.tab-button-back:hover::before {
+.tab-back:hover::before {
     border-right-color: var(--effortless-gray);
 }
 
-.tab-button-forward:hover::after {
+.tab-forward:hover::after {
     border-left-color: var(--effortless-gray);
 }
 
 .button-container {
     display: flex;
-    justify-content: center;  /* Change from space-between to center */
-    margin: 20px auto;  /* Change from 20px 0 to 20px auto */
-    width: auto;  /* Change from 100% to auto */
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 20px auto;
+    width: 100%;
+    gap: 10px;
 }
 
-/* For the quickstart page */
+.button-container.minimal {
+    width: fit-content;
+}
+
 .button-container:first-of-type {
     margin-top: 30px;
 }
 
-/* For the docs homepage */
 .button-container:not(:first-of-type) {
     margin-top: 10px;
+}
+
+.tab-highlight {
+    background-color: var(--tertiary-color);
 }

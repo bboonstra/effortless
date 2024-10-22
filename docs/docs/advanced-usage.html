@@ -45,8 +45,8 @@
             <!-- prettier-ignore -->
             <div class="command python">
                 python_devs = db.filter(
-                    Field("skills").contains("Python") & 
-                    Field("joined").between_dates("2023-01-01", "2023-02-28")
+                ‎     Field("skills").contains("Python") & 
+                ‎     Field("joined").between_dates("2023-01-01", "2023-02-28")
                 )
                 print(python_devs)
             </div>
@@ -74,8 +74,8 @@
             <!-- prettier-ignore -->
             <div class="command python">
                 result = db.filter(
-                    (Field("age").greater_than(25) & Field("skills").contains("Python")) |
-                    Field("name").startswith("A")
+                ‎     (Field("age").greater_than(25) & Field("skills").contains("Python")) |
+                ‎     Field("name").startswith("A")
                 )
             </div>
 
@@ -83,7 +83,7 @@
             <!-- prettier-ignore -->
             <div class="command python">
                 def is_experienced(skills):
-                    return len(skills) > 3
+                ‎    return len(skills) > 3
 
                 result = db.filter(Field("skills").passes(is_experienced))
             </div>
@@ -104,7 +104,7 @@
             </p>
 
             <div class="button-container">
-                <a href="basic-usage.html" class="tab-button tab-button-back">Basic Usage</a>
+                <a href="basic-usage.html" class="tab tab-back">Basic Usage</a>
             </div>
         </main>
     </body>

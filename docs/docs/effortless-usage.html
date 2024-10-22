@@ -13,12 +13,35 @@
         <main>
             <h1 class="feature">Effortless Usage</h1>
             <p>
-                Get started with Effortless in just a few lines of code. Here's
-                how to use the basic features:
+                You can get started with Effortless in just a few simple steps.
+                If you're looking for more complexity, check the other tiers of
+                usage!
             </p>
 
-            <h2>1. Importing Effortless</h2>
-            <p>Start by importing the necessary components from Effortless:</p>
+            <h2>Get set up</h2>
+
+            <p>
+                You'll need to
+                <a href="docs/quickstart.html">install Effortless</a> if you
+                haven't yet. After that, start up Python in a new terminal or command-line.</p>
+            <div class="command bash">python</div>
+            <div class="button-container" class="minimal">
+                <a
+                    href="https://macpaw.com/how-to/use-terminal-on-mac"
+                    target="_blank"
+                    class="tab tab-forward minimal"
+                    >MacOs</a
+                >
+                <a
+                    href="https://www.wikihow.com/Open-Terminal-in-Windows"
+                    target="_blank"
+                    class="tab tab-forward minimal"
+                    >Windows</a
+                >
+            </div>
+
+            <h2>Importing Effortless</h2>
+            <p>After you've installed it, you'll need to import the module to access a database.</p>
             <div class="command python">from effortless import db, Field</div>
 
             <h2>2. Adding Items to the Database</h2>
@@ -35,7 +58,8 @@
             <p><code>db.get_all()</code> returns all items in the database:</p>
             <!-- prettier-ignore -->
             <div class="command python">
-                all_items = db.get_all() print(all_items) 
+                all_items = db.get_all() 
+                print(all_items) 
                 # Output: {'1': {'name': 'Alice', 'age': 30}, '2': {'name': 'Bob', 'age': 25}}
             </div>
 
@@ -62,8 +86,10 @@
             </p>
 
             <div class="button-container">
-                <a href="quickstart.html" class="tab-button tab-button-back">Quickstart</a>
-                <a href="basic-usage.html" class="tab-button tab-button-forward">Basic Usage</a>
+                <a href="quickstart.html" class="tab tab-back">Quickstart</a>
+                <a href="basic-usage.html" class="tab tab-forward"
+                    >Basic Usage</a
+                >
             </div>
         </main>
     </body>
