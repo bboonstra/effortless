@@ -11,37 +11,40 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function setupCommandContainers() {
     const commandDivs = document.querySelectorAll('div[class^="command"]');
-    commandDivs.forEach(div => {
-        const language = div.className.split(' ')[1] || 'bash';
+    commandDivs.forEach((div) => {
+        const language = div.className.split(" ")[1] || "bash";
         const code = div.innerHTML.trim();
-        div.innerHTML = '';
-        div.className = 'command-container';
-        
-        const prefixDiv = document.createElement('div');
-        prefixDiv.className = 'prefix';
-        
-        const pre = document.createElement('pre');
+        div.innerHTML = "";
+        div.className = "command-container";
+
+        const prefixDiv = document.createElement("div");
+        prefixDiv.className = "prefix";
+
+        const pre = document.createElement("pre");
         pre.className = `language-${language}`;
-        pre.setAttribute('tabindex', '0');
-        
-        const codeElement = document.createElement('code');
+        pre.setAttribute("tabindex", "0");
+
+        const codeElement = document.createElement("code");
         codeElement.className = `language-${language}`;
-        
+
         // Handle indentation and create prefix
-        const lines = code.split('\n');
+        const lines = code.split("\n");
         const processedLines = lines.map((line) => line.trim());
-        const processedCode = processedLines.join('\n').trim();
-        codeElement.innerHTML = processedCode.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-        
-        let prefix = language === 'python' ? '>>> ' : '$ ';
+        const processedCode = processedLines.join("\n").trim();
+        codeElement.innerHTML = processedCode
+            .replace(/&amp;/g, "&")
+            .replace(/&lt;/g, "<")
+            .replace(/&gt;/g, ">");
+
+        let prefix = language === "python" ? ">>> " : "$ ";
         prefixDiv.innerHTML = prefix + `<br>${prefix}`.repeat(lines.length - 1);
-        
+
         pre.appendChild(codeElement);
         div.appendChild(prefixDiv);
         div.appendChild(pre);
 
-        const button = document.createElement('button');
-        button.className = 'copy-button';
+        const button = document.createElement("button");
+        button.className = "copy-button";
         div.appendChild(button);
     });
 }
@@ -62,7 +65,8 @@ function setupCopyButtons() {
         button.appendChild(checkSvg);
 
         button.addEventListener("click", function () {
-            const codeElement = this.previousElementSibling.querySelector('code');
+            const codeElement =
+                this.previousElementSibling.querySelector("code");
             const textToCopy = codeElement.textContent.trim().replace(/‎/g, "");
             console.log(textToCopy);
             navigator.clipboard
