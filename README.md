@@ -16,128 +16,15 @@ You can install Effortless easily, if you have
 pip install effortless
 ```
 
+Check the [quickstart](https://bboonstra.github.io/Effortless/docs/quickstart.html) for more details.
+
 ## Usage
 
 We offer 3 tiers of effort when using our databases. If this is your first time
-using a database, try out the [Effortless](#effortless-usage) usage below.
+using a database, try out the [Effortless](https://bboonstra.github.io/Effortless/docs/effortless-usage.html) usage below.
 If you are working on a simple project, you should take a look at the
-[Basic](#basic-usage) usage docs.
-Overachievers may want to try our [Advanced](#advanced-usage) features.
-
-### Effortless Usage
-
-```python
-from effortless import db, Field
-
-# Add items to the database
-db.add({"name": "Alice", "age": 30})
-db.add({"name": "Bob", "age": 25})
-
-# Get all items from the DB
-all_items = db.get_all()
-print(all_items)
-# Output: {'1': {'name': 'Alice', 'age': 30}, '2': {'name': 'Bob', 'age': 25}}
-
-# Get items based on a field
-# This will get all items where their name is Alice
-result = db.filter(Field("name").equals("Alice"))
-print(result)  # Output: {'1': {'name': 'Alice', 'age': 30}}
-
-# Wipe the database
-db.wipe()
-print(db.get_all())  # Output: {}
-```
-
-### Basic Usage
-
-```python
-from effortless import EffortlessDB, Field
-
-# Create a new Effortless instance
-db = EffortlessDB()
-
-# Add items to the database
-db.add({"name": "Charlie", "age": 35})
-db.add({"name": "David", "age": 28})
-
-# Filter items
-result = db.filter(Field("age").greater_than(30))
-print(result)  # Output: {'1': {'name': 'Charlie', 'age': 35}}
-
-```
-
-### Advanced Usage
-
-```python
-from effortless import EffortlessDB, EffortlessConfig, Field, Query
-
-# Create a new Effortless instance with a custom directory
-db = EffortlessDB("advanced_db")
-db.set_directory("/path/to/custom/directory")
-
-# Add multiple items
-db.add({"id": 1, "name": "Eve", "skills": ["Python", "JavaScript"], "joined": "2023-01-15"})
-db.add({"id": 2, "name": "Frank", "skills": ["Java", "C++"], "joined": "2023-02-20"})
-db.add({"id": 3, "name": "Grace", "skills": ["Python", "Ruby"], "joined": "2023-03-10"})
-
-# Complex filtering
-python_devs = db.filter(
-    Field("skills").contains("Python") & 
-    Field("joined").between_dates("2023-01-01", "2023-02-28")
-)
-print(python_devs)
-
-# Custom query using Query class
-custom_query = Query(lambda item: len(item["skills"]) > 1 and "Python" in item["skills"])
-multi_skill_python_devs = db.filter(custom_query)
-print(multi_skill_python_devs)
-
-# Update configuration
-db.configure(EffortlessConfig({"readonly": True}))
-# The database contents are now read-only
-db.add({"Anything": "will not work"}) # Raises an error
-
-```
-
-## New Filtering Capabilities
-
-Effortless 1.1 introduces powerful filtering capabilities using the `Field` class:
-
-- `equals`: Exact match
-- `contains`: Check if a value is in a string or list
-- `startswith`, `endswith`: String prefix and suffix matching
-- `greater_than`, `less_than`: Numeric comparisons
-- `matches_regex`: Regular expression matching
-- `between_dates`: Date range filtering
-- `fuzzy_match`: Approximate string matching
-- `passes`: Apply a custom function to filter items
-- `is_type`: Check the type of a field
-
-You can combine these filters using `&` (AND) and `|` (OR) operators for complex queries.
-
-```python
-result = db.filter(
-    (Field("age").greater_than(25) & Field("skills").contains("Python")) |
-    Field("name").startswith("A")
-)
-```
-
-For even more flexibility, you can use the `passes` method with a custom function:
-
-```python
-def is_experienced(skills):
-    return len(skills) > 3
-
-result = db.filter(Field("skills").passes(is_experienced))
-```
-
-You can also check the type of a field:
-
-```python
-result = db.filter(Field("age").is_type(int))
-```
-
-These new filtering capabilities make Effortless more powerful while maintaining its simplicity and ease of use.
+[Basic](https://bboonstra.github.io/Effortless/docs/basic-usage.html) usage docs.
+Overachievers may want to try our [Advanced](https://bboonstra.github.io/Effortless/docs/advanced-usage.html) features.
 
 ## Why Effortless?
 
