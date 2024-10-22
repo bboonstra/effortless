@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2024-10-22
+
+### Added
+
+- Added the remove and erase methods to delete entries that pass conditions
+- Added the update and batch methods to update entries that pass conditions
+
+### Changed
+
+- Fixed an issue where a Field would not exist if the field's value was None
+- Migrated to use 'Entry' rather than 'Item' for clarity
+- Multiple entries are now returned in a list format rather than a dict format
+
+### Docs
+
+- Added a favicon to the documentation
+- Migrated to use 'Entry' rather than 'Item' for clarity
+- Fleshed out the Home, Quickstart, and Usages
+- Detailed per-method documentation & search coming soon!
+
+### Notes
+
+- 1.2.0 is not compatible with databases from 1.1.1 or below. We hope that this is the last minor update that is not backwards-compatible; expect an automigrate feature to come soon.
+
 ## [1.1.1] - 2024-10-21
 
 ### Added

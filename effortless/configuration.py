@@ -48,7 +48,9 @@ class EffortlessConfig:
         if self.max_size is not None and self.max_size <= 0:
             raise ValueError("max_size must be a positive integer")
         if self.v != 1:
-            raise ValueError("v1 is the only version of Effortless.")
+            raise ValueError(
+                "v1 is the only version of EffortlessDB currently available."
+            )
         if self.backup_interval <= 0:
             raise ValueError("Backup interval must be a positive integer")
 

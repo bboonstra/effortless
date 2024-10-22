@@ -138,7 +138,9 @@ class Query(BaseQuery):
         Returns:
             Query: This query object with the new condition.
         """
-        self.condition = lambda entry: self._get_nested_value(entry, self.field) == value
+        self.condition = (
+            lambda entry: self._get_nested_value(entry, self.field) == value
+        )
         return self
 
     def contains(self, value, case_sensitive=True):
@@ -283,6 +285,7 @@ class Query(BaseQuery):
             TypeError: If start_date or end_date is not a datetime object.
             ValueError: If start_date is after end_date.
         """
+
         def to_datetime(date):
             if isinstance(date, str):
                 try:
@@ -292,7 +295,9 @@ class Query(BaseQuery):
             elif isinstance(date, datetime):
                 return date
             else:
-                raise TypeError(f"Date must be a string or datetime object, not {type(date)}")
+                raise TypeError(
+                    f"Date must be a string or datetime object, not {type(date)}"
+                )
 
         start_date = to_datetime(start_date)
         end_date = to_datetime(end_date)
@@ -373,7 +378,9 @@ class Query(BaseQuery):
             Query: This query object with the new condition.
         """
 
-        self.condition = lambda entry: isinstance(self._get_nested_value(entry, self.field), expected_type)
+        self.condition = lambda entry: isinstance(
+            self._get_nested_value(entry, self.field), expected_type
+        )
         return self
 
     def _get_nested_value(self, entry, field):
@@ -521,4 +528,3 @@ class FieldNotFoundError(Exception):
     """
 
     pass
-
