@@ -62,17 +62,26 @@ document.addEventListener("DOMContentLoaded", function () {
         <div id="sidebar" class="collapsed">
             <ul>
                 <li>
-                    <span class="dropdown-toggle">Getting Started</span>
+                    <span class="dropdown-toggle">What's New?</span>
                     <ul class="dropdown">
-                        <li><a href="/docs/quickstart.html">Quickstart</a></li>
+                        <li><a href="/changelog.html">Changelog</a></li>
                     </ul>
                 </li>
                 <li>
-                    <span class="dropdown-toggle">Usage</span>
+                    <span class="dropdown-toggle">Getting Started</span>
                     <ul class="dropdown">
-                        <li><a href="/docs/effortless-usage.html">Effortless</a></li>
-                        <li><a href="/docs/basic-usage.html">Basic</a></li>
-                        <li><a href="/docs/advanced-usage.html">Advanced</a></li>
+                        <li><a href="/docs/quickstart.html">Quickstart</a></li>
+                        <li><a href="/docs/effortless-usage.html">Effortless Usage</a></li>
+                        <li><a href="/docs/basic-usage.html">Basic Usage</a></li>
+                        <li><a href="/docs/advanced-usage.html">Advanced Usage</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <span class="dropdown-toggle">Technical</span>
+                    <ul class="dropdown">
+                        <li><a href="/docs/technical/db.html">EffortlessDB</a></li>
+                        <li><a href="/docs/technical/config.html">EffortlessConfig</a></li>
+                        <li><a href="/docs/technical/fields.html">Fields</a></li>
                     </ul>
                 </li>
             </ul>
@@ -170,7 +179,7 @@ const isLocalhost =
     window.location.hostname === "127.0.0.1";
 
 function adjustLinks() {
-    const baseUrl = isLocalhost ? '' : '/Effortless';
+    const baseUrl = isLocalhost ? "" : "/Effortless";
     var links = document.querySelectorAll("a");
     links.forEach((link) => {
         var href = link.getAttribute("href");

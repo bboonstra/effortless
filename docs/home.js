@@ -13,18 +13,24 @@ document.addEventListener("templateConstructed", function () {
                 section.style.background = "var(--background-color)";
             } else {
                 section.style.backgroundColor = "transparent";
-                section.style.background = "linear-gradient(90deg, var(--effortless-blue), var(--effortless-green))";
+                section.style.background =
+                    "linear-gradient(90deg, var(--effortless-blue), var(--effortless-green))";
             }
         });
     }
 
     function updateArrowColors() {
-        var currentSectionColor = getComputedStyle(sections[currentSection]).backgroundColor;
-        var backgroundColorHex = getComputedStyle(document.documentElement).getPropertyValue("--background-color").trim();
+        var currentSectionColor = getComputedStyle(
+            sections[currentSection]
+        ).backgroundColor;
+        var backgroundColorHex = getComputedStyle(document.documentElement)
+            .getPropertyValue("--background-color")
+            .trim();
         var backgroundColorRgb = hexToRgb(backgroundColorHex);
-        var arrowColor = currentSectionColor === backgroundColorRgb
-            ? "var(--primary-color)"
-            : "var(--background-color)";
+        var arrowColor =
+            currentSectionColor === backgroundColorRgb
+                ? "var(--primary-color)"
+                : "var(--background-color)";
 
         upArrow.style.color = arrowColor;
         downArrow.style.color = arrowColor;
@@ -32,7 +38,10 @@ document.addEventListener("templateConstructed", function () {
 
     function updateArrowVisibility() {
         upArrow.classList.toggle("show", currentSection > 0);
-        downArrow.classList.toggle("show", currentSection < sections.length - 1);
+        downArrow.classList.toggle(
+            "show",
+            currentSection < sections.length - 1
+        );
     }
 
     function scrollToSection(index) {
