@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", function () {
     setupCommandContainers();
     setupCopyButtons();
     Prism.highlightAll();
-    addPrefixes();
 });
 
 function setupCommandContainers() {
@@ -18,6 +17,9 @@ function setupCommandContainers() {
         div.innerHTML = '';
         div.className = 'command-container';
         
+        const prefixDiv = document.createElement('div');
+        prefixDiv.className = 'prefix';
+        
         const pre = document.createElement('pre');
         pre.className = `language-${language}`;
         pre.setAttribute('tabindex', '0');
@@ -25,45 +27,22 @@ function setupCommandContainers() {
         const codeElement = document.createElement('code');
         codeElement.className = `language-${language}`;
         
-        // Handle indentation
+        // Handle indentation and create prefix
         const lines = code.split('\n');
         const processedLines = lines.map((line) => line.trim());
         const processedCode = processedLines.join('\n').trim();
         codeElement.innerHTML = processedCode.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
         
+        let prefix = language === 'python' ? '>>> ' : '$ ';
+        prefixDiv.innerHTML = prefix + `<br>${prefix}`.repeat(lines.length - 1);
+        
         pre.appendChild(codeElement);
+        div.appendChild(prefixDiv);
         div.appendChild(pre);
 
         const button = document.createElement('button');
         button.className = 'copy-button';
         div.appendChild(button);
-    });
-}
-
-function addPrefixes() {
-    const commandContainers = document.querySelectorAll('.command-container');
-    commandContainers.forEach(container => {
-        const pre = container.querySelector('pre');
-        const code = pre.querySelector('code');
-        const language = pre.className.split('-')[1];
-        const lines = code.innerHTML.split('\n');
-        
-        let prefix = '';
-        if (language === 'bash') {
-            prefix = '$ ';
-        } else if (language === 'python') {
-            prefix = '>>> ';
-        }
-        
-        const prefixDiv = document.createElement('div');
-        prefixDiv.className = 'prefix';
-        prefixDiv.innerHTML = prefix + `<br>${prefix}`.repeat(lines.length - 1);
-        container.insertBefore(prefixDiv, pre);
-        
-        const prefixedLines = lines.map((line) => {
-            return `<div class="command-line"><span class="command-body">${line}</span></div>`;
-        });
-        code.innerHTML = prefixedLines.join('\n');
     });
 }
 
@@ -84,11 +63,8 @@ function setupCopyButtons() {
 
         button.addEventListener("click", function () {
             const codeElement = this.previousElementSibling.querySelector('code');
-            const commandBodies = codeElement.querySelectorAll('.command-body');
-            const textToCopy = Array.from(commandBodies)
-                .map(body => body.textContent.trim())
-                .join('\n');
-
+            const textToCopy = codeElement.textContent.trim().replace(/‎/g, "");
+            console.log(textToCopy);
             navigator.clipboard
                 .writeText(textToCopy)
                 .then(() => {

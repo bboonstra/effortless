@@ -13,17 +13,22 @@
         <main>
             <h1 class="feature">Advanced Usage</h1>
             <p>
-                For those who want more control and advanced features, Effortless offers powerful capabilities. Here's how to use Effortless with advanced features:
+                For those who want more control and advanced features,
+                Effortless offers powerful capabilities. Here's how to use
+                Effortless with advanced features:
             </p>
 
-            <h2>1. Importing Advanced Components</h2>
-            <p>Start by importing the necessary advanced components from Effortless:</p>
+            <h2>Importing Advanced Components</h2>
+            <p>
+                Start by importing the necessary advanced components from
+                Effortless:
+            </p>
             <!-- prettier-ignore -->
             <div class="command python">
                 from effortless import EffortlessDB, EffortlessConfig, Field, Query
             </div>
 
-            <h2>2. Creating a Custom Database Instance</h2>
+            <h2>Creating a Custom Database Instance</h2>
             <p>Create a new Effortless instance with a custom directory:</p>
             <!-- prettier-ignore -->
             <div class="command python">
@@ -31,7 +36,12 @@
                 db.set_directory("/path/to/custom/directory")
             </div>
 
-            <h2>3. Adding Multiple Items</h2>
+            <p class="command-instructions">
+                Change "/path/to/custom/directory" to the path of where you'd
+                like the db to be stored.
+            </p>
+
+            <h2>Adding Multiple Items</h2>
             <p>Add multiple items with more complex data structures:</p>
             <!-- prettier-ignore -->
             <div class="command python">
@@ -40,7 +50,7 @@
                 db.add({"id": 3, "name": "Grace", "skills": ["Python", "Ruby"], "joined": "2023-03-10"})
             </div>
 
-            <h2>4. Complex Filtering</h2>
+            <h2>Complex Filtering</h2>
             <p>Use advanced filtering techniques to find specific items:</p>
             <!-- prettier-ignore -->
             <div class="command python">
@@ -51,7 +61,7 @@
                 print(python_devs)
             </div>
 
-            <h2>5. Custom Queries</h2>
+            <h2>Custom Queries</h2>
             <p>Create custom queries using the Query class:</p>
             <!-- prettier-ignore -->
             <div class="command python">
@@ -60,7 +70,7 @@
                 print(multi_skill_python_devs)
             </div>
 
-            <h2>6. Configuring the Database</h2>
+            <h2>Configuring the Database</h2>
             <p>Update the database configuration for advanced settings:</p>
             <!-- prettier-ignore -->
             <div class="command python">
@@ -69,7 +79,7 @@
                 db.add({"Anything": "will not work"})  # Raises an error
             </div>
 
-            <h2>7. Advanced Filtering Capabilities</h2>
+            <h2>Advanced Filtering Capabilities</h2>
             <p>Effortless 1.1 introduces powerful filtering capabilities:</p>
             <!-- prettier-ignore -->
             <div class="command python">
@@ -94,13 +104,10 @@
                 result = db.filter(Field("age").is_type(int))
             </div>
 
-            <p class="command-instructions">
-                Click the copy icon to copy the code to your clipboard.
-            </p>
-
             <p>
-                These advanced features allow you to create more complex database structures,
-                perform intricate queries, and have finer control over your database configuration.
+                These advanced features allow you to create more complex
+                database structures, perform intricate queries, and have finer
+                control over your database configuration.
             </p>
 
             <div class="button-container">

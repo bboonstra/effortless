@@ -23,67 +23,87 @@
             <p>
                 You'll need to
                 <a href="docs/quickstart.html">install Effortless</a> if you
-                haven't yet. After that, start up Python in a new terminal or command-line.</p>
+                haven't yet. After that, start up Python in a new terminal or
+                command-line. <br />Type this in and hit enter:
+            </p>
             <div class="command bash">python</div>
-            <div class="button-container" class="minimal">
-                <a
-                    href="https://macpaw.com/how-to/use-terminal-on-mac"
-                    target="_blank"
-                    class="tab tab-forward minimal"
-                    >MacOs</a
-                >
-                <a
-                    href="https://www.wikihow.com/Open-Terminal-in-Windows"
-                    target="_blank"
-                    class="tab tab-forward minimal"
-                    >Windows</a
-                >
+            <div class="titled-container">
+                <h3><b>Need help?</b></h3>
+                <div class="button-container minimal">
+                    <a
+                        href="https://macpaw.com/how-to/use-terminal-on-mac"
+                        target="_blank"
+                        class="tab tab-forward minimal"
+                        >MacOS</a
+                    >
+                    <a
+                        href="https://www.wikihow.com/Open-Terminal-in-Windows"
+                        target="_blank"
+                        class="tab tab-forward minimal"
+                        >Windows</a
+                    >
+                </div>
             </div>
 
             <h2>Importing Effortless</h2>
-            <p>After you've installed it, you'll need to import the module to access a database.</p>
-            <div class="command python">from effortless import db, Field</div>
-
-            <h2>2. Adding Items to the Database</h2>
             <p>
-                Use <code>db.add()</code> to insert new items into the database:
+                After you've installed Effortless and started Python, you'll
+                need to import the module to access a database. <br />Run this:
+            </p>
+            <div class="command python">from effortless import db, Field</div>
+            <p>
+                This will automatically start a database <code>db</code> which
+                you can now use with <code>db.action()</code> where action is
+                what you want to do.
+            </p>
+
+            <h2>Adding Entries to the Database</h2>
+            <p>
+                Use <code>add(data)</code> to insert a new entry into the
+                database. Let's add some data to work with:
             </p>
             <!-- prettier-ignore -->
             <div class="command python">
                 db.add({"name": "Alice", "age": 30}) 
                 db.add({"name":"Bob","age": 25})
             </div>
+            <p>
+                This adds two entries to the database: Alice, who is 30 years
+                old, and Bob, who is 25.
+            </p>
 
-            <h2>3. Retrieving All Items</h2>
-            <p><code>db.get_all()</code> returns all items in the database:</p>
+            <h2>Retrieving All Entries</h2>
+            <p><code>get_all()</code> returns all entries in the database:</p>
             <!-- prettier-ignore -->
             <div class="command python">
-                all_items = db.get_all() 
-                print(all_items) 
-                # Output: {'1': {'name': 'Alice', 'age': 30}, '2': {'name': 'Bob', 'age': 25}}
+                db.get_all() 
             </div>
-
-            <h2>4. Filtering Items</h2>
             <p>
-                Use <code>db.filter()</code> with a <code>Field</code> condition
-                to find specific items:
+                This will return: <br />
+                <code
+                    >{'1': {'name': 'Alice', 'age': 30}, '2': {'name': 'Bob',
+                    'age': 25}}</code
+                ><br />
+                You can see both Alice and Bob, and their IDs - 1 and 2.
+            </p>
+
+            <h2>Filtering Entries</h2>
+            <p>
+                Use <code>filter(requirement)</code> with a
+                <code>Field</code> requirement to find specific entries. A
+                <code>Field</code> checks for something to be in an entry, and
+                then checks any additional conditions you've added; in the
+                example below, we check for entries which both
+                <b>have a name</b> and who's <b>name is equal to Alice</b>.
             </p>
             <!-- prettier-ignore -->
             <div class="command python">
-                result = db.filter(Field("name").equals("Alice")) 
-                print(result)
-                # Output: {'1': {'name': 'Alice', 'age': 30}}
+                db.filter(Field("name").equals("Alice")) 
             </div>
 
-            <p class="command-instructions">
-                Click the copy icon to copy the code to your clipboard.
-            </p>
+            <p>This will return only Alice's data and not Bob's.</p>
 
-            <p>
-                This effortless usage allows you to quickly set up a database,
-                add items, retrieve data, and perform basic operations without
-                any complex setup or configuration.
-            </p>
+            <p>Got it down effortlessly? Try the Basic Usage!</p>
 
             <div class="button-container">
                 <a href="quickstart.html" class="tab tab-back">Quickstart</a>

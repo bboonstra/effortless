@@ -16,21 +16,21 @@
                 Here's how to use Effortless with a bit more control over your database:
             </p>
 
-            <h2>1. Importing Effortless</h2>
+            <h2>Importing Effortless</h2>
             <p>Start by importing the necessary components from Effortless:</p>
             <!-- prettier-ignore -->
             <div class="command python">
                 from effortless import EffortlessDB, Field
             </div>
 
-            <h2>2. Creating a Database Instance</h2>
+            <h2>Creating a Database Instance</h2>
             <p>Create a new Effortless instance:</p>
             <!-- prettier-ignore -->
             <div class="command python">
                 db = EffortlessDB()
             </div>
 
-            <h2>3. Adding Items to the Database</h2>
+            <h2>Adding Items to the Database</h2>
             <p>Use <code>db.add()</code> to insert new items into the database:</p>
             <!-- prettier-ignore -->
             <div class="command python">
@@ -38,7 +38,7 @@
                 db.add({"name": "David", "age": 28})
             </div>
 
-            <h2>4. Filtering Items</h2>
+            <h2>Filtering Items</h2>
             <p>
                 Use <code>db.filter()</code> with a <code>Field</code> condition
                 to find specific items:
@@ -48,10 +48,6 @@
                 result = db.filter(Field("age").greater_than(30))
                 print(result)  # Output: {'1': {'name': 'Charlie', 'age': 35}}
             </div>
-
-            <p class="command-instructions">
-                Click the copy icon to copy the code to your clipboard.
-            </p>
 
             <p>
                 This basic usage allows you to create a specific database instance,

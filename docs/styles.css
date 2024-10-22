@@ -10,7 +10,7 @@
     --secondary-color: #373737;
     --tertiary-color: #8adbae;
     --text-color: #373737;
-    --hover-color: #6a8eff;
+    --hover-color: var(--effortless-green);
     --background-color: #f4f4f4;
     --navbar-color: #373737;
     --sidebar-width: 20%;
@@ -22,6 +22,8 @@
 * {
     /* Change colors smoothly for theme changes */
     transition: color 0.3s ease, background-color 0.3s ease;
+    margin-right: auto;
+    margin-left: auto;
 }
 
 body {
@@ -356,5 +358,16 @@ main {
 }
 
 .tab-highlight {
-    background-color: var(--tertiary-color);
+    background-color: var(--hover-color);
+}
+.tab-highlight:hover {
+    background-color: var(--effortless-blue);
+}
+
+.titled-container {
+    background-color: color-mix(in srgb, var(--background-color) 90%, black);
+    width: fit-content;
+    margin: 0 auto;
+    padding: 5px 20px;
+    border-radius: 15px;
 }

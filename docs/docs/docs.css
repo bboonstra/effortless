@@ -5,6 +5,12 @@ h2 {
     margin-top: 70px;
 }
 
+p {
+    width: 90%;
+    min-width: 300px;
+    max-width: 820px;
+}
+
 .terminal-command {
     text-decoration: none;
     color: inherit;
