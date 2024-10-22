@@ -13,15 +13,15 @@ class BaseQuery(ABC):
     """
 
     @abstractmethod
-    def match(self, item):
+    def match(self, entry):
         """
-        Abstract method to check if an item matches the query.
+        Abstract method to check if an entry matches the query.
 
         Args:
-            item: The item to check against the query.
+            entry: The entry to check against the query.
 
         Returns:
-            bool: True if the item matches the query, False otherwise.
+            bool: True if the entry matches the query, False otherwise.
         """
         pass
 
@@ -77,6 +77,16 @@ class Query(BaseQuery):
         else:
             self.field = condition_or_field
             self.condition = None
+        self.field_validator = self._create_field_validator()
+
+    def _create_field_validator(self):
+        if self.field is None:
+            return lambda entry: True
+        elif isinstance(self.field, str):
+            return lambda entry: self._field_exists(entry, self.field)
+        elif isinstance(self.field, (tuple, list)):
+            return lambda entry: all(self._field_exists(entry, f) for f in self.field)
+        return lambda entry: False
 
     def __and__(self, other):
         """
@@ -102,55 +112,21 @@ class Query(BaseQuery):
         """
         return CombinedQuery(self, other, lambda a, b: a or b)
 
-    def match(self, item):
+    def match(self, entry):
         """
-        Check if an item matches this query.
+        Check if an entry matches this query.
 
         Args:
-            item (dict): The item to check against the query.
+            entry (dict): The entry to check against the query.
 
         Returns:
-            bool: True if the item matches the query, False otherwise.
+            bool: True if the entry matches the query, False otherwise.
         """
-        if self.condition:
-            return self.condition(item)
-        return True  # Default to True if no condition is set
-
-    def _validate_field(self, item):
-        """
-        Check if the field exists in the item.
-
-        Args:
-            item (dict): The item to check.
-
-        Returns:
-            bool: True if the field exists, False otherwise.
-        """
-        try:
-            self._get_nested_value(item, self.field)
-            return True
-        except KeyError:
+        if not self.field_validator(entry):
             return False
-
-    def _get_nested_value(self, item, field):
-        """
-        Get the value of a potentially nested field in an item.
-
-        Args:
-            item (dict): The item to search in.
-            field (str): The field name, potentially with dot notation for nested fields.
-
-        Returns:
-            The value of the field, or None if not found.
-        """
-        keys = field.split(".")
-        value = item
-        for key in keys:
-            if isinstance(value, dict) and key in value:
-                value = value[key]
-            else:
-                return None
-        return value
+        if self.condition:
+            return self.condition(entry)
+        return True  # Default to True if no condition is set
 
     def equals(self, value):
         """
@@ -162,10 +138,7 @@ class Query(BaseQuery):
         Returns:
             Query: This query object with the new condition.
         """
-        self.condition = (
-            lambda item: self._validate_field(item)
-            and self._get_nested_value(item, self.field) == value
-        )
+        self.condition = lambda entry: self._get_nested_value(entry, self.field) == value
         return self
 
     def contains(self, value, case_sensitive=True):
@@ -180,8 +153,8 @@ class Query(BaseQuery):
             Query: This query object with the new condition.
         """
 
-        def condition(item):
-            field_value = self._get_nested_value(item, self.field)
+        def condition(entry):
+            field_value = self._get_nested_value(entry, self.field)
             if isinstance(field_value, str):
                 return (
                     value.lower() in field_value.lower()
@@ -193,13 +166,13 @@ class Query(BaseQuery):
                     return value in field_value
                 else:
                     return any(
-                        value.lower() == item.lower()
-                        for item in field_value
-                        if isinstance(item, str)
+                        value.lower() == entry.lower()
+                        for entry in field_value
+                        if isinstance(entry, str)
                     )
             return False
 
-        self.condition = lambda item: self._validate_field(item) and condition(item)
+        self.condition = condition
         return self
 
     def startswith(self, value, case_sensitive=True):
@@ -214,13 +187,13 @@ class Query(BaseQuery):
             Query: This query object with the new condition.
         """
 
-        def condition(item):
-            field_value = str(self._get_nested_value(item, self.field))
+        def condition(entry):
+            field_value = str(self._get_nested_value(entry, self.field))
             if not case_sensitive:
                 return field_value.lower().startswith(value.lower())
             return field_value.startswith(value)
 
-        self.condition = lambda item: self._validate_field(item) and condition(item)
+        self.condition = condition
         return self
 
     def endswith(self, value):
@@ -233,8 +206,8 @@ class Query(BaseQuery):
         Returns:
             Query: This query object with the new condition.
         """
-        self.condition = lambda item: self._validate_field(item) and str(
-            self._get_nested_value(item, self.field)
+        self.condition = lambda entry: str(
+            self._get_nested_value(entry, self.field)
         ).endswith(value)
         return self
 
@@ -248,10 +221,7 @@ class Query(BaseQuery):
         Returns:
             Query: This query object with the new condition.
         """
-        self.condition = (
-            lambda item: self._validate_field(item)
-            and self._get_nested_value(item, self.field) > value
-        )
+        self.condition = lambda entry: self._get_nested_value(entry, self.field) > value
         return self
 
     def less_than(self, value):
@@ -264,10 +234,7 @@ class Query(BaseQuery):
         Returns:
             Query: This query object with the new condition.
         """
-        self.condition = (
-            lambda item: self._validate_field(item)
-            and self._get_nested_value(item, self.field) < value
-        )
+        self.condition = lambda entry: self._get_nested_value(entry, self.field) < value
         return self
 
     def matches_regex(self, pattern, flags=0):
@@ -292,13 +259,13 @@ class Query(BaseQuery):
         except re.error as e:
             raise ValueError(f"Invalid regex pattern: {e}")
 
-        def condition(item):
-            field_value = self._get_nested_value(item, self.field)
+        def condition(entry):
+            field_value = self._get_nested_value(entry, self.field)
             if not isinstance(field_value, str):
                 return False  # Return False for non-string fields
             return compiled_pattern.search(field_value) is not None
 
-        self.condition = lambda item: self._validate_field(item) and condition(item)
+        self.condition = condition
         return self
 
     def between_dates(self, start_date, end_date):
@@ -332,8 +299,8 @@ class Query(BaseQuery):
         if start_date > end_date:
             raise ValueError("Start date must be before or equal to end date")
 
-        def condition(item):
-            field_value = self._get_nested_value(item, self.field)
+        def condition(entry):
+            field_value = self._get_nested_value(entry, self.field)
             if isinstance(field_value, str):
                 try:
                     field_value = datetime.fromisoformat(field_value)
@@ -341,7 +308,7 @@ class Query(BaseQuery):
                     return False
             return start_date <= field_value <= end_date
 
-        self.condition = lambda item: self._validate_field(item) and condition(item)
+        self.condition = condition
         return self
 
     def fuzzy_match(self, value, threshold=0.8):
@@ -364,11 +331,11 @@ class Query(BaseQuery):
         if not isinstance(threshold, (int, float)) or not 0 <= threshold <= 1:
             raise ValueError("Threshold must be a number between 0 and 1")
 
-        def condition(item):
-            field_value = str(self._get_nested_value(item, self.field))
+        def condition(entry):
+            field_value = str(self._get_nested_value(entry, self.field))
             return SequenceMatcher(None, field_value, value).ratio() >= threshold
 
-        self.condition = lambda item: self._validate_field(item) and condition(item)
+        self.condition = condition
         return self
 
     def passes(self, func):
@@ -382,8 +349,8 @@ class Query(BaseQuery):
             Query: This query object with the new condition.
         """
 
-        def condition(item):
-            field_value = self._get_nested_value(item, self.field)
+        def condition(entry):
+            field_value = self._get_nested_value(entry, self.field)
             try:
                 return func(field_value)
             except Exception as e:
@@ -392,7 +359,7 @@ class Query(BaseQuery):
                     f"Error checking condition '{func_name}': {str(e)}"
                 ) from e
 
-        self.condition = lambda item: self._validate_field(item) and condition(item)
+        self.condition = condition
         return self
 
     def is_type(self, expected_type: Type):
@@ -406,12 +373,48 @@ class Query(BaseQuery):
             Query: This query object with the new condition.
         """
 
-        def condition(item):
-            field_value = self._get_nested_value(item, self.field)
-            return isinstance(field_value, expected_type)
-
-        self.condition = lambda item: self._validate_field(item) and condition(item)
+        self.condition = lambda entry: isinstance(self._get_nested_value(entry, self.field), expected_type)
         return self
+
+    def _get_nested_value(self, entry, field):
+        """
+        Get the value of a potentially nested field in an entry.
+
+        Args:
+            entry (dict): The entry to search in.
+            field (str): The field name, potentially with dot notation for nested fields.
+
+        Returns:
+            The value of the field, or None if not found.
+        """
+        keys = field.split(".")
+        value = entry
+        for key in keys:
+            if isinstance(value, dict) and key in value:
+                value = value[key]
+            else:
+                return None
+        return value
+
+    def _field_exists(self, entry, field):
+        """
+        Check if a field exists in an entry.
+
+        Args:
+            entry (dict): The entry to search in.
+            field (str): The field name, potentially with dot notation for nested fields.
+
+        Returns:
+            bool: True if the field exists, False otherwise.
+        """
+        keys = field.split(".")
+        value = entry
+        for key in keys:
+            if isinstance(value, dict) and key in value:
+                value = value[key]
+            else:
+                return False
+        return True
 
 
 class AndQuery(BaseQuery):
@@ -428,17 +431,17 @@ class AndQuery(BaseQuery):
         """
         self.queries = queries
 
-    def match(self, item):
+    def match(self, entry):
         """
-        Check if an item matches all the combined queries.
+        Check if an entry matches all the combined queries.
 
         Args:
-            item: The item to check against the queries.
+            entry: The entry to check against the queries.
 
         Returns:
-            bool: True if the item matches all queries, False otherwise.
+            bool: True if the entry matches all queries, False otherwise.
         """
-        return all(query.match(item) for query in self.queries)
+        return all(query.match(entry) for query in self.queries)
 
 
 class OrQuery(BaseQuery):
@@ -455,17 +458,17 @@ class OrQuery(BaseQuery):
         """
         self.queries = queries
 
-    def match(self, item):
+    def match(self, entry):
         """
-        Check if an item matches any of the combined queries.
+        Check if an entry matches any of the combined queries.
 
         Args:
-            item: The item to check against the queries.
+            entry: The entry to check against the queries.
 
         Returns:
-            bool: True if the item matches any query, False otherwise.
+            bool: True if the entry matches any query, False otherwise.
         """
-        return any(query.match(item) for query in self.queries)
+        return any(query.match(entry) for query in self.queries)
 
 
 class CombinedQuery(Query):
@@ -486,17 +489,17 @@ class CombinedQuery(Query):
         self.query2 = query2
         self.combine_func = combine_func
 
-    def match(self, item):
+    def match(self, entry):
         """
-        Check if an item matches the combined query.
+        Check if an entry matches the combined query.
 
         Args:
-            item: The item to check against the combined query.
+            entry: The entry to check against the combined query.
 
         Returns:
             bool: The result of applying the combination function to the results of both queries.
         """
-        return self.combine_func(self.query1.match(item), self.query2.match(item))
+        return self.combine_func(self.query1.match(entry), self.query2.match(entry))
 
 
 def Field(field_name: str) -> Query:
@@ -514,7 +517,8 @@ def Field(field_name: str) -> Query:
 
 class FieldNotFoundError(Exception):
     """
-    Exception raised when a specified field is not found in an item.
+    Exception raised when a specified field is not found in an entry.
     """
 
     pass
+
