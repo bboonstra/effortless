@@ -152,7 +152,7 @@ class TestConfiguration(unittest.TestCase):
             self.db.config.backup, backup_path, "Backup path should be set correctly"
         )
 
-        # Add an item to trigger a backup
+        # Add an entry to trigger a backup
         self.db.add({"name": "Alice", "age": 30})
 
         backup_file = os.path.join(backup_path, "test_db.effortless")
@@ -161,13 +161,13 @@ class TestConfiguration(unittest.TestCase):
             "DB should not be backed up after 1 operation if bpi == 2.",
         )
 
-        # Add another item to trigger a backup again
+        # Add another entry to trigger a backup again
         self.db.add({"name": "Bob", "age": 25})
 
         # Check if the backup file still exists and has been updated
         self.assertTrue(
             os.path.exists(backup_file),
-            "Backup file should exist after adding the second item.",
+            "Backup file should exist after adding the second entry.",
         )
 
         # Clean up the backup directory

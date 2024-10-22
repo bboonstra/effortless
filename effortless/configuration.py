@@ -17,7 +17,7 @@ class EffortlessConfig:
 
         Attributes:
             debug (bool): Enable debug mode. Defaults to False.
-            requires (List[str]): List of required fields for each item. Defaults to an empty list.
+            requires (List[str]): List of required fields for each entry. Defaults to an empty list.
             max_size (Optional[int]): Maximum size of the database in MB. Defaults to None (no limit).
             v (int): Version of the configuration. Always 1 for now.
             backup (Optional[str]): Path to backup location. Defaults to None (no backup).

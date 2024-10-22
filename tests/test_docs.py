@@ -17,19 +17,19 @@ class TestDocs(unittest.TestCase):
         db = effortless.db
         db.wipe(wipe_readonly=True)
 
-        # Add items to the database
+        # Add entries to the database
         db.add({"name": "Alice", "age": 30})
         db.add({"name": "Bob", "age": 25})
 
-        # Get all items from the DB
-        all_items = db.get_all()
+        # Get all entries from the DB
+        all_entries = db.get_all()
         self.assertEqual(
-            all_items,
+            all_entries,
             [{"name": "Alice", "age": 30}, {"name": "Bob", "age": 25}],
-            "get_all() should return all items added to the database",
+            "get_all() should return all entries added to the database",
         )
 
-        # Get items based on a field
+        # Get entries based on a field
         result = db.filter(Field("name").equals("Alice"))
         self.assertEqual(
             result,
@@ -46,11 +46,11 @@ class TestDocs(unittest.TestCase):
         db = EffortlessDB()
         db.wipe(wipe_readonly=True)
 
-        # Add items to the database
+        # Add entries to the database
         db.add({"name": "Charlie", "age": 35})
         db.add({"name": "David", "age": 28})
 
-        # Filter items
+        # Filter entries
         result = db.filter(Field("age").greater_than(30))
         self.assertEqual(
             result,
@@ -64,7 +64,7 @@ class TestDocs(unittest.TestCase):
         db.set_directory(self.test_dir)
         db.wipe()
 
-        # Add multiple items
+        # Add multiple entries
         db.add(
             {
                 "id": 1,
@@ -108,7 +108,7 @@ class TestDocs(unittest.TestCase):
 
         # Custom query using Query class
         custom_query = Query(
-            lambda item: len(item["skills"]) > 1 and "Python" in item["skills"]
+            lambda entry: len(entry["skills"]) > 1 and "Python" in entry["skills"]
         )
         multi_skill_python_devs = db.filter(custom_query)
         self.assertEqual(

@@ -42,8 +42,8 @@
                 like the db to be stored.
             </p>
 
-            <h2>Adding Multiple Items</h2>
-            <p>Add multiple items with more complex data structures:</p>
+            <h2>Adding Multiple Entries</h2>
+            <p>Add multiple entries with more complex data structures:</p>
             <!-- prettier-ignore -->
             <div class="command python">
                 db.add({"id": 1, "name": "Eve", "skills": ["Python", "JavaScript"], "joined": "2023-01-15"})
@@ -52,7 +52,7 @@
             </div>
 
             <h2>Complex Filtering</h2>
-            <p>Use advanced filtering techniques to find specific items:</p>
+            <p>Use advanced filtering techniques to find specific entries:</p>
             <!-- prettier-ignore -->
             <div class="command python">
                 python_devs = db.filter(
@@ -66,7 +66,7 @@
             <p>Create custom queries using the Query class:</p>
             <!-- prettier-ignore -->
             <div class="command python">
-                custom_query = Query(lambda item: len(item["skills"]) > 1 and "Python" in item["skills"])
+                custom_query = Query(lambda entry: len(entry["skills"]) > 1 and "Python" in entry["skills"])
                 multi_skill_python_devs = db.filter(custom_query)
                 print(multi_skill_python_devs)
             </div>

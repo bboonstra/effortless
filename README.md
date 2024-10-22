@@ -48,7 +48,7 @@ Effortless introduces a unique and intuitive object-oriented filter system. You 
 
 ```python
 is_bboonstra = Field("username").equals("bboonstra")
-is_experienced = Query(lambda item: len(item["known_programming_languages"]) > 5)
+is_experienced = Query(lambda entry: len(entry["known_programming_languages"]) > 5)
 GOATs = db.filter(is_bboonstra | is_experienced)
 ```
 
