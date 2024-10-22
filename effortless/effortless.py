@@ -186,7 +186,7 @@ class EffortlessDB:
         The returned list contains all records in the database.
 
         Returns:
-            List[Dict[str, Any]]: A list where each item is a record in the database.
+            List[Dict[str, Any]]: A list where each entry is a record in the database.
         """
         return self._read_db()["content"]
 
@@ -203,54 +203,56 @@ class EffortlessDB:
         Returns:
             List[Dict[str, Any]]: A list of records that match the query criteria.
         """
-        return [item for item in self.get_all() if query.match(item)]
+        return [entry for entry in self.get_all() if query.match(entry)]
 
-    def add(self, item: dict) -> None:
+    def add(self, entry: dict) -> None:
         """
-        Add a new item to the database.
+        Add a new entry to the database.
 
         This method adds a new record to the database. It performs several checks:
-        - Ensures the item is a dictionary
+        - Ensures the entry is a dictionary
         - Verifies that all required fields (as per configuration) are present
-        - Checks if the item is JSON-serializable
-        - Verifies that adding the item won't exceed the configured max size (if set)
+        - Checks if the entry is JSON-serializable
+        - Verifies that adding the entry won't exceed the configured max size (if set)
 
         Args:
-            item (dict): The item to be added to the database.
+            entry (dict): The entry to be added to the database.
 
         Raises:
-            TypeError: If the item is not a dictionary.
-            ValueError: If a required field is missing, if the item is not JSON-serializable,
-                        or if adding the item would exceed the max size limit.
+            TypeError: If the entry is not a dictionary.
+            ValueError: If a required field is missing, if the entry is not JSON-serializable,
+                        or if adding the entry would exceed the max size limit.
 
         Note:
             This method also triggers a backup if the backup conditions are met.
         """
-        if not isinstance(item, dict):
-            raise TypeError("Item must be a dictionary")
+        if not isinstance(entry, dict):
+            raise TypeError("Entry must be a dictionary")
 
         for field in self.config.requires:
-            if field not in item:
+            if field not in entry:
                 raise ValueError(
                     f"Field '{field}' is configured to be required in this database"
                 )
 
         try:
-            json.dumps(item)
+            json.dumps(entry)
         except (TypeError, ValueError):
-            raise ValueError("Item must be JSON-serializable")
+            raise ValueError("Entry must be JSON-serializable")
 
         data = self._read_db()
 
         if self.config.max_size:
-            current_size = os.path.getsize(self._storage_file) / (1024 * 1024)  # Size in MB
-            new_size = current_size + len(json.dumps(item)) / (1024 * 1024)
+            current_size = os.path.getsize(self._storage_file) / (
+                1024 * 1024
+            )  # Size in MB
+            new_size = current_size + len(json.dumps(entry)) / (1024 * 1024)
             if new_size > self.config.max_size:
                 raise ValueError(
                     f"The requested operation would increase the size of the database past the configured max db size ({self.config.max_size} MB)."
                 )
 
-        data["content"].append(item)
+        data["content"].append(entry)
         self._write_db(data)
         self._handle_backup()
 
@@ -523,6 +525,63 @@ class EffortlessDB:
         """
         # TODO: Implement decryption
         return value
+
+    def update(self, update_data: Dict[str, Any], condition: Query) -> bool:
+        """
+        Update a single entry in the database that matches the given condition.
+
+        Args:
+            update_data (Dict[str, Any]): The data to update the matching entry with.
+            condition (Query): A Query object defining the condition to match.
+
+        Returns:
+            bool: True if an entry was updated, False if no matching entry was found.
+
+        Raises:
+            ValueError: If more than one entry matches the condition.
+        """
+        data = self._read_db()
+        matching_entries = [
+            entry for entry in data["content"] if condition.match(entry)
+        ]
+
+        if len(matching_entries) > 1:
+            raise ValueError(
+                "More than one entry matches the given condition. If you want to update multiple entries at once, use batch() instead."
+            )
+        elif len(matching_entries) == 0:
+            return False
+
+        index = data["content"].index(matching_entries[0])
+        data["content"][index].update(update_data)
+        self._write_db(data)
+        self._handle_backup()
+        return True
+
+    def batch(self, update_data: Dict[str, Any], condition: Query) -> int:
+        """
+        Update all entries in the database that match the given condition.
+
+        Args:
+            update_data (Dict[str, Any]): The data to update the matching entries with.
+            condition (Query): A Query object defining the condition to match.
+
+        Returns:
+            int: The number of entries that were updated.
+        """
+        data = self._read_db()
+        updated_count = 0
+
+        for entry in data["content"]:
+            if condition.match(entry):
+                entry.update(update_data)
+                updated_count += 1
+
+        if updated_count > 0:
+            self._write_db(data)
+            self._handle_backup()
+
+        return updated_count
 
 
 db = EffortlessDB()
