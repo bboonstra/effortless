@@ -85,7 +85,7 @@ class Query(BaseQuery):
         elif isinstance(self.field, str):
             return lambda entry: self._field_exists(entry, self.field)
         elif isinstance(self.field, (tuple, list)):
-            return lambda entry: all(self._field_exists(entry, f) for f in self.field)
+            return lambda entry: all(self._field_exists(entry, f) for f in self.field) # type: ignore
         return lambda entry: False
 
     def __and__(self, other):
@@ -311,6 +311,8 @@ class Query(BaseQuery):
                     field_value = datetime.fromisoformat(field_value)
                 except ValueError:
                     return False
+            if not isinstance(field_value, datetime):
+                return False
             return start_date <= field_value <= end_date
 
         self.condition = condition
@@ -528,3 +530,4 @@ class FieldNotFoundError(Exception):
     """
 
     pass
+

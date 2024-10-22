@@ -74,7 +74,7 @@ class EffortlessConfig:
         }
 
     @staticmethod
-    def default_headers():
+    def default_headers() -> Dict[str, Any]:
         """
         Create a dictionary with default headers.
 

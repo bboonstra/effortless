@@ -2,5 +2,6 @@
     "python.testing.unittestEnabled": true,
     "python.testing.unittestArgs": ["-v", "-s", "./tests", "-p", "test_*.py"],
     "python.testing.autoTestDiscoverOnSaveEnabled": true,
-    "liveServer.settings.root": "/docs"
+    "liveServer.settings.root": "/docs",
+    "python.analysis.typeCheckingMode": "basic"
 }

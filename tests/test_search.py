@@ -403,7 +403,7 @@ class TestAdvancedSearchErrors(unittest.TestCase):
 
         # Test with non-numeric threshold
         with self.assertRaises(ValueError):
-            self.db.filter(Field("name").fuzzy_match("Alice", threshold="high"))
+            self.db.filter(Field("name").fuzzy_match("Alice", threshold="high")) # type: ignore
 
     def test_fuzzy_match_value_error(self):
         # Test with threshold out of range
