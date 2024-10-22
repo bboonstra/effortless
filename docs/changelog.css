@@ -1,0 +1,81 @@
+#changelog-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: var(--body-font);
+    color: var(--text-color);
+    background-color: var(--background-color);
+    text-align: center;
+}
+
+#changelog-content h1 {
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+#changelog-content h2 {
+    color: var(--background-color);
+    background-color: var(--primary-color);
+    font-size: 2.25rem;
+    padding: 10px 20px;
+    border-radius: 5px;
+    display: inline-block;
+    margin-top: 50px;
+    margin-bottom: 25px;
+}
+
+#changelog-content h3 {
+    color: var(--background-color);
+    background-color: var(--tertiary-color);
+    font-size: 1.5rem;
+    padding: 5px 15px;
+    border-radius: 3px;
+    display: inline-block;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+* {
+    list-style-position: inside;
+    margin: 0px auto;
+}
+
+#changelog-content ul {
+    list-style-type: disc;
+    padding-left: 20px;
+    margin-bottom: 15px;
+}
+
+#changelog-content li {
+    margin-bottom: 5px;
+}
+
+#changelog-content p {
+    line-height: 1.6;
+}
+
+#changelog-content a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+#changelog-content a:hover {
+    text-decoration: underline;
+}
+
+/* Add responsive design */
+@media (max-width: 768px) {
+    #changelog-content {
+        padding: 10px;
+    }
+
+    #changelog-content h2 {
+        font-size: 1rem;
+    }
+
+    #changelog-content h3 {
+        font-size: 0.9rem;
+    }
+}
