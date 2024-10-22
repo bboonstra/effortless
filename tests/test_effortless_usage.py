@@ -45,41 +45,41 @@ class TestEffortlessUsage(unittest.TestCase):
         db.add({"id": 2, "name": "Bob"})
 
         result = db.filter(query=Field("name").equals("Alice"))
-        self.assertEqual(result, {"1": {"id": 1, "name": "Alice"}})
+        self.assertEqual(result, [{"id": 1, "name": "Alice"}])
 
         result = db.filter(query=Field("id").equals(2))
-        self.assertEqual(result, {"2": {"id": 2, "name": "Bob"}})
+        self.assertEqual(result, [{"id": 2, "name": "Bob"}])
 
         result = db.filter(query=Field("name").equals("Charlie"))
-        self.assertEqual(result, {})
+        self.assertEqual(result, [])
 
     def test_add(self):
         db.wipe()
         db.add({"id": 1, "name": "Alice"})
         data = db.get_all()
-        self.assertEqual(data, {"1": {"id": 1, "name": "Alice"}})
+        self.assertEqual(data, [{"id": 1, "name": "Alice"}])
 
         db.add({"id": 2, "name": "Bob"})
         data = db.get_all()
         self.assertEqual(
             data,
-            {
-                "1": {"id": 1, "name": "Alice"},
-                "2": {"id": 2, "name": "Bob"},
-            },
+            [
+                {"id": 1, "name": "Alice"},
+                {"id": 2, "name": "Bob"},
+            ],
         )
 
-    def test_add_to_dict(self):
+    def test_add_to_list(self):
         db.wipe()
         db.add({"key": "value"})
         db.add({"new_key": "new_value"})
         data = db.get_all()
         self.assertEqual(
             data,
-            {
-                "1": {"key": "value"},
-                "2": {"new_key": "new_value"},
-            },
+            [
+                {"key": "value"},
+                {"new_key": "new_value"},
+            ],
         )
 
         with self.assertRaises(TypeError):
@@ -93,7 +93,7 @@ class TestEffortlessUsage(unittest.TestCase):
     def test_read_write_db(self):
         test_data = {
             "headers": EffortlessConfig().to_dict(),
-            "content": {"test": True, "nested": {"key": "value"}},
+            "content": [{"test": True, "nested": {"key": "value"}}],
         }
         db._write_db(test_data)
         read_data = db._read_db()

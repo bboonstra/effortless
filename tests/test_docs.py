@@ -25,16 +25,16 @@ class TestDocs(unittest.TestCase):
         all_items = db.get_all()
         self.assertEqual(
             all_items,
-            {"1": {"name": "Alice", "age": 30}, "2": {"name": "Bob", "age": 25}},
+            [{"name": "Alice", "age": 30}, {"name": "Bob", "age": 25}],
         )
 
         # Get items based on a field
         result = db.filter(Field("name").equals("Alice"))
-        self.assertEqual(result, {"1": {"name": "Alice", "age": 30}})
+        self.assertEqual(result, [{"name": "Alice", "age": 30}])
 
         # Wipe the database
         db.wipe()
-        self.assertEqual(db.get_all(), {})
+        self.assertEqual(db.get_all(), [])
 
     def test_basic_usage(self):
         # Create a new Effortless instance
@@ -47,7 +47,7 @@ class TestDocs(unittest.TestCase):
 
         # Filter items
         result = db.filter(Field("age").greater_than(30))
-        self.assertEqual(result, {"1": {"name": "Charlie", "age": 35}})
+        self.assertEqual(result, [{"name": "Charlie", "age": 35}])
 
     def test_advanced_usage(self):
         # Create a new Effortless instance with a custom directory
@@ -87,7 +87,7 @@ class TestDocs(unittest.TestCase):
             & Field("joined").between_dates("2023-01-01", "2023-02-28")
         )
         self.assertEqual(len(python_devs), 1)
-        self.assertEqual(python_devs["1"]["name"], "Eve")
+        self.assertEqual(python_devs[0]["name"], "Eve")
 
         # Custom query using Query class
         custom_query = Query(
@@ -95,8 +95,8 @@ class TestDocs(unittest.TestCase):
         )
         multi_skill_python_devs = db.filter(custom_query)
         self.assertEqual(len(multi_skill_python_devs), 2)
-        self.assertIn("1", multi_skill_python_devs)
-        self.assertIn("3", multi_skill_python_devs)
+        self.assertEqual(multi_skill_python_devs[0]["name"], "Eve")
+        self.assertEqual(multi_skill_python_devs[1]["name"], "Grace")
 
         # Update configuration
         db.configure(EffortlessConfig({"ro": True}))
@@ -117,8 +117,8 @@ class TestDocs(unittest.TestCase):
             | Field("name").startswith("A")
         )
         self.assertEqual(len(result), 2)
-        self.assertIn("1", result)
-        self.assertIn("3", result)
+        self.assertEqual(result[0]["name"], "Alice")
+        self.assertEqual(result[1]["name"], "Charlie")
 
         # passes method
         def is_experienced(skills):
@@ -126,8 +126,8 @@ class TestDocs(unittest.TestCase):
 
         result = db.filter(Field("skills").passes(is_experienced))
         self.assertEqual(len(result), 2)
-        self.assertIn("1", result)
-        self.assertIn("3", result)
+        self.assertEqual(result[0]["name"], "Alice")
+        self.assertEqual(result[1]["name"], "Charlie")
 
         # is_type method
         result = db.filter(Field("age").is_type(int))
@@ -150,7 +150,6 @@ class TestDocs(unittest.TestCase):
         self.assertEqual(db.config.backup, self.test_dir)
 
         # Check if backup file is created (this is a simplified check)
-
         backup_files = [
             f for f in os.listdir(self.test_dir) if f.endswith(".effortless")
         ]
@@ -188,8 +187,8 @@ class TestDocs(unittest.TestCase):
         GOATs = db.filter(is_bboonstra | is_experienced)
 
         self.assertEqual(len(GOATs), 2)
-        self.assertIn("1", GOATs)
-        self.assertIn("3", GOATs)
+        self.assertEqual(GOATs[0]["username"], "bboonstra")
+        self.assertEqual(GOATs[1]["username"], "user2")
 
 
 if __name__ == "__main__":

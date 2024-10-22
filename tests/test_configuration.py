@@ -132,7 +132,7 @@ class TestConfiguration(unittest.TestCase):
         # Check if the backup file still exists and has been updated
         self.assertTrue(
             os.path.exists(backup_file),
-            "Backup file should still exist after adding the second item.",
+            "Backup file should exist after adding the second item.",
         )
 
         # Clean up the backup directory
