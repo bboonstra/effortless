@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Callable, Union, Tuple, List, Type
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 from difflib import SequenceMatcher
 
 
@@ -85,7 +85,7 @@ class Query(BaseQuery):
         elif isinstance(self.field, str):
             return lambda entry: self._field_exists(entry, self.field)
         elif isinstance(self.field, (tuple, list)):
-            return lambda entry: all(self._field_exists(entry, f) for f in self.field) # type: ignore
+            return lambda entry: all(self._field_exists(entry, f) for f in self.field)  # type: ignore
         return lambda entry: False
 
     def __and__(self, other):
@@ -275,28 +275,39 @@ class Query(BaseQuery):
         Create a condition that checks if the field's date is between the given dates.
 
         Args:
-            start_date (datetime): The start date of the range.
-            end_date (datetime): The end date of the range.
+            start_date (Union[datetime, str, int, float]): The start date of the range.
+            end_date (Union[datetime, str, int, float]): The end date of the range.
 
         Returns:
             Query: This query object with the new condition.
 
         Raises:
-            TypeError: If start_date or end_date is not a datetime object.
-            ValueError: If start_date is after end_date.
+            TypeError: If start_date or end_date is not a datetime, string, int, or float.
+            ValueError: If start_date is after end_date, if the date string format is invalid,
+                        or if the Unix timestamp is invalid.
         """
 
         def to_datetime(date):
             if isinstance(date, str):
                 try:
-                    return datetime.fromisoformat(date)
+                    dt = datetime.fromisoformat(date)
+                    return dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt
                 except ValueError:
                     raise ValueError(f"Invalid date format: {date}")
             elif isinstance(date, datetime):
-                return date
+                return (
+                    date.replace(tzinfo=timezone.utc) if date.tzinfo is None else date
+                )
+            elif isinstance(date, (int, float)):
+                if date < 0:
+                    raise ValueError(f"Invalid Unix timestamp: {date}")
+                try:
+                    return datetime.fromtimestamp(date, tz=timezone.utc)
+                except (ValueError, OSError, OverflowError):
+                    raise ValueError(f"Invalid Unix timestamp: {date}")
             else:
                 raise TypeError(
-                    f"Date must be a string or datetime object, not {type(date)}"
+                    f"Date must be a string, datetime, int, or float object, not {type(date)}"
                 )
 
         start_date = to_datetime(start_date)
@@ -309,9 +320,22 @@ class Query(BaseQuery):
             if isinstance(field_value, str):
                 try:
                     field_value = datetime.fromisoformat(field_value)
+                    field_value = (
+                        field_value.replace(tzinfo=timezone.utc)
+                        if field_value.tzinfo is None
+                        else field_value
+                    )
                 except ValueError:
                     return False
-            if not isinstance(field_value, datetime):
+            elif isinstance(field_value, (int, float)):
+                field_value = datetime.fromtimestamp(field_value, tz=timezone.utc)
+            elif isinstance(field_value, datetime):
+                field_value = (
+                    field_value.replace(tzinfo=timezone.utc)
+                    if field_value.tzinfo is None
+                    else field_value
+                )
+            else:
                 return False
             return start_date <= field_value <= end_date
 
@@ -530,4 +554,3 @@ class FieldNotFoundError(Exception):
     """
 
     pass
-
