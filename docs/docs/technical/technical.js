@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const formattedAttr = document.createElement("span");
         formattedAttr.className = `formatted-attr ${attrName}`;
         formattedAttr.textContent = content;
-        if (attrName === "prop-type") {
+        if (attrName === "prop-type" || attrName === "at") {
             element.insertBefore(formattedAttr, element.firstChild);
         } else {
             element.appendChild(formattedAttr);
@@ -42,6 +42,16 @@ document.addEventListener("DOMContentLoaded", function () {
                     "method-returns",
                     `→ ${returns}`
                 );
+            }
+        });
+
+    // Add formatted attributes for 'at'
+    document
+        .querySelectorAll(".method-subheader[at]")
+        .forEach((method) => {
+            const atValue = method.getAttribute("at");
+            if (atValue && atValue.trim() !== "") {
+                createFormattedAttribute(method, "at", atValue);
             }
         });
 });

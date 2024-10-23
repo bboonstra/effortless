@@ -31,13 +31,22 @@
                         that holds the configuration settings for the database.
                     </p>
                 </div>
+                <div class="property">
+                    <h4 class="prop-subheader" prop-type="string">
+                        encryption_key
+                    </h4>
+                    <p class="prop-description">
+                        The encryption key (password) used to encrypt and
+                        decrypt the database.
+                    </p>
+                </div>
             </div>
             <h2 class="method-header">Methods</h2>
             <div class="methods-container">
                 <div class="method">
                     <h4
                         class="method-subheader"
-                        method-parameters="db_name: string"
+                        method-parameters="db_name: string, encryption_key: string"
                     >
                         __init__
                     </h4>
@@ -46,7 +55,8 @@
                         database name. If no name is provided, it defaults to
                         "db". For example, passing in "users" will create a
                         database with the file "users.effortless" in the current
-                        directory.
+                        directory. If an encryption_key is provided, it will be
+                        used to encrypt/decrypt the database.
                     </p>
                     <!-- prettier-ignore -->
                     <div class="command python example-usage">
@@ -203,6 +213,33 @@
                     <p class="method-description">
                         Updates the database configuration to reflect a new
                         <a href="config.html">EffortlessConfig</a> object.
+                    </p>
+                </div>
+                <div class="method">
+                    <h4
+                        class="method-subheader"
+                        method-parameters="new_key: string"
+                    >
+                        encrypt
+                    </h4>
+                    <p class="method-description">
+                        Sets a new encryption key and re-encrypts the database
+                        if necessary. If the database is already encrypted, this
+                        method will attempt to decrypt with both the old and new
+                        keys, then re-encrypt with the new key.
+                    </p>
+                </div>
+                <div class="method">
+                    <h4
+                        class="method-subheader"
+                        method-parameters="new_key: string"
+                    >
+                        unencrypt
+                    </h4>
+                    <p class="method-description">
+                        Permanently unencrypts the database using the encryption
+                        key if the database is currently encrypted. Raises a
+                        ValueError if an encryption key is not set.
                     </p>
                 </div>
                 <div class="method">

@@ -119,6 +119,12 @@
     color: var(--background-color);
 }
 
+.at {
+    background-color: var(--secondary-color);
+    color: var(--background-color);
+    margin: 0px;
+}
+
 @media (max-width: 768px) {
     .technical-title {
         font-size: 2rem;

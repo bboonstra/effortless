@@ -26,10 +26,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - EffortlessConfig now takes keyword parameters instead of a dictioniary
   - Use from_dict if you need the old functionality
 
-### Docs
-
-- TODO
-  
 ## [1.2.0.1] - 2024-10-22
 
 ### Added

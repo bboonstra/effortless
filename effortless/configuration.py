@@ -146,7 +146,7 @@ class EffortlessConfig:
             "compressed": self.compressed,
             "readonly": self.readonly,
         }
-
+    
     @classmethod
     def from_dict(cls, config_dict: Dict[str, Any]) -> "EffortlessConfig":
         """

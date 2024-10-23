@@ -41,8 +41,7 @@
             <p>You can futher customize the database with a configuration:</p>
             <!-- prettier-ignore -->
             <div class="command python">
-                config = EffortlessConfig()
-                config.readonly = True
+                config = EffortlessConfig(readonly=True)
                 db.configure(config)
                 # The database contents are now read-only
                 db.add({"Anything": "will not work"})  # Raises an error
