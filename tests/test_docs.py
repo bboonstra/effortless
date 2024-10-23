@@ -128,7 +128,7 @@ class TestDocs(unittest.TestCase):
         )
 
         # Update configuration
-        db.configure(EffortlessConfig({"ro": True}))
+        db.configure(EffortlessConfig(readonly=True))
         with self.assertRaises(
             Exception, msg="Adding to a read-only database should raise an exception"
         ):
@@ -195,7 +195,7 @@ class TestDocs(unittest.TestCase):
         db.wipe(wipe_readonly=True)
 
         new_configuration = EffortlessConfig()
-        new_configuration.backup = self.test_dir
+        new_configuration.backup_path = self.test_dir
         db.configure(new_configuration)
 
         # Add some data
@@ -205,7 +205,7 @@ class TestDocs(unittest.TestCase):
         db.finish_backup()
 
         self.assertEqual(
-            db.config.backup,
+            db.config.backup_path,
             self.test_dir,
             "Database backup directory should be set to the test directory",
         )

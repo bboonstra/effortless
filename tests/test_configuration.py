@@ -18,10 +18,12 @@ class TestConfiguration(unittest.TestCase):
     def test_default_configuration(self):
         config = self.db.config
         self.assertFalse(config.debug, "Debug mode should be off by default")
-        self.assertEqual(config.requires, [], "No fields should be required by default")
+        self.assertEqual(
+            config.required_fields, [], "No fields should be required by default"
+        )
         self.assertIsNone(config.max_size, "Max size should be None by default")
-        self.assertEqual(config.v, 1, "Version should be 1 by default")
-        self.assertIsNone(config.backup, "Backup path should be None by default")
+        self.assertEqual(config.version, 1, "Version should be 1 by default")
+        self.assertIsNone(config.backup_path, "Backup path should be None by default")
         self.assertEqual(
             config.backup_interval, 1, "Backup interval should be 1 by default"
         )
@@ -30,30 +32,32 @@ class TestConfiguration(unittest.TestCase):
         self.assertFalse(config.readonly, "Read-only mode should be off by default")
 
     def test_configure_method(self):
-        new_config = {
-            "dbg": True,
-            "rq": ["name", "age"],
-            "ms": 100,
-            "bp": "/backup/path",
-            "bpi": 5,
-            "enc": False,
-            "cmp": False,
-            "ro": True,
-        }
+        new_config = EffortlessConfig(
+            debug=True,
+            required_fields=["name", "age"],
+            max_size=100,
+            backup_path="/backup/path",
+            backup_interval=5,
+            encrypted=False,
+            compressed=False,
+            readonly=True,
+        )
         self.db.wipe()
-        self.db.configure(EffortlessConfig(new_config))
+        self.db.configure(new_config)
 
         config = self.db.config
         self.assertTrue(config.debug, "Debug mode should be on after configuration")
         self.assertEqual(
-            config.requires,
+            config.required_fields,
             ["name", "age"],
             "Required fields should be set to name and age",
         )
         self.assertEqual(config.max_size, 100, "Max size should be set to 100")
-        self.assertEqual(config.v, 1, "Version should remain 1")
+        self.assertEqual(config.version, 1, "Version should remain 1")
         self.assertEqual(
-            config.backup, "/backup/path", "Backup path should be set to /backup/path"
+            config.backup_path,
+            "/backup/path",
+            "Backup path should be set to /backup/path",
         )
         self.assertEqual(
             config.backup_interval, 5, "Backup interval should be set to 5"
@@ -70,7 +74,7 @@ class TestConfiguration(unittest.TestCase):
             self.db.configure("invalid")  # type: ignore
 
     def test_required_fields(self):
-        self.db.configure(EffortlessConfig({"rq": ["name"]}))
+        self.db.configure(EffortlessConfig(required_fields=["name"]))
         self.db.add({"name": "Alice", "age": 30})  # This should work
         with self.assertRaises(
             ValueError,
@@ -80,7 +84,7 @@ class TestConfiguration(unittest.TestCase):
 
     def test_max_size_limit(self):
         self.db.wipe()
-        self.db.configure(EffortlessConfig({"ms": 0.001}))  # Set max size to 1 KB
+        self.db.configure(EffortlessConfig(max_size=0.001))  # Set max size to 1 KB
 
         # This should work
         self.db.add({"small": "data"})
@@ -94,15 +98,17 @@ class TestConfiguration(unittest.TestCase):
 
     def test_readonly_mode(self):
         self.db = EffortlessDB()
-        self.db.configure(EffortlessConfig({"ro": True}))
+        self.db.configure(EffortlessConfig(readonly=True))
         with self.assertRaises(
             ValueError, msg="Adding to a read-only database should raise ValueError"
         ):
             self.db.add({"name": "Alice"})
 
     def test_configuration_persistence(self):
-        new_config = {"dbg": True, "rq": ["name"], "ms": 100, "v": 1}
-        self.db.configure(EffortlessConfig(new_config))
+        new_config = EffortlessConfig(
+            debug=True, required_fields=["name"], max_size=100, version=1
+        )
+        self.db.configure(new_config)
 
         # Create a new instance with the same storage
         new_db = EffortlessDB()
@@ -114,7 +120,7 @@ class TestConfiguration(unittest.TestCase):
             config.debug, "Debug mode should persist across database instances"
         )
         self.assertEqual(
-            config.requires,
+            config.required_fields,
             ["name"],
             "Required fields should persist across database instances",
         )
@@ -122,34 +128,36 @@ class TestConfiguration(unittest.TestCase):
             config.max_size, 100, "Max size should persist across database instances"
         )
         self.assertEqual(
-            config.v, 1, "Version should persist across database instances"
+            config.version, 1, "Version should persist across database instances"
         )
 
     def test_invalid_configuration_values(self):
         with self.assertRaises(
             ValueError, msg="Negative max size should raise ValueError"
         ):
-            EffortlessConfig({"ms": -1})
+            EffortlessConfig(max_size=-1)
         with self.assertRaises(ValueError, msg="Version 0 should raise ValueError"):
-            EffortlessConfig({"v": 0})
+            EffortlessConfig(version=0)
         with self.assertRaises(
             ValueError, msg="Backup interval 0 should raise ValueError"
         ):
-            EffortlessConfig({"bpi": 0})
+            EffortlessConfig(backup_interval=0)
 
     def test_backup_interval(self):
         # Configure the database with a backup path
         backup_path = tempfile.mkdtemp()  # Create a temporary directory for backups
-        new_config = {
-            "dbg": True,
-            "bp": backup_path,  # Set backup path
-            "bpi": 1,  # Backup after every operation
-        }
-        self.db.configure(EffortlessConfig(new_config))
+        new_config = EffortlessConfig(
+            debug=True,
+            backup_path=backup_path,  # Set backup path
+            backup_interval=1,  # Backup after every operation
+        )
+        self.db.configure(new_config)
 
         # Assert that the backup path is properly configured
         self.assertEqual(
-            self.db.config.backup, backup_path, "Backup path should be set correctly"
+            self.db.config.backup_path,
+            backup_path,
+            "Backup path should be set correctly",
         )
 
         # Add an entry to trigger a backup
@@ -158,7 +166,7 @@ class TestConfiguration(unittest.TestCase):
         backup_file = os.path.join(backup_path, "test_db.effortless")
         self.assertFalse(
             os.path.exists(backup_file),
-            "DB should not be backed up after 1 operation if bpi == 2.",
+            "DB should not be backed up after 1 operation if backup_interval == 2.",
         )
 
         # Add another entry to trigger a backup again

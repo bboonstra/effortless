@@ -162,7 +162,7 @@ class TestAdvancedUsage(unittest.TestCase):
         )
 
     def test_encryption_and_compression(self):
-        self.db.configure(EffortlessConfig({"enc": True, "cmp": True}))
+        self.db.configure(EffortlessConfig(encrypted=True, compressed=True))
         self.db.add({"test": "data"})
         data = self.db._read_db()
         self.assertIsInstance(
@@ -177,7 +177,7 @@ class TestAdvancedUsage(unittest.TestCase):
         )
 
     def test_encryption(self):
-        self.db.configure(EffortlessConfig({"enc": True}))
+        self.db.configure(EffortlessConfig(encrypted=True))
         original_data = {"sensitive": "information"}
         self.db.add(original_data)
 
@@ -198,7 +198,7 @@ class TestAdvancedUsage(unittest.TestCase):
 
     def test_backup(self):
         backup_dir = tempfile.mkdtemp()
-        self.db.configure(EffortlessConfig({"bp": backup_dir, "bpi": 1}))
+        self.db.configure(EffortlessConfig(backup_path=backup_dir, backup_interval=1))
 
         self.db.add({"test": "backup"})
         time.sleep(1)

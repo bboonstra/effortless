@@ -42,8 +42,8 @@ class EffortlessDB:
         Returns:
             dict: A dictionary with 'headers' (default configuration) and an empty 'content'.
         """
-        ddb = EffortlessConfig.default_headers()
-        ddb["content"] = []  # Changed to an empty list
+        ddb: Dict[str, Any] = {"headers": EffortlessConfig().to_dict()}
+        ddb["content"] = []
         return ddb
 
     def set_directory(self, directory: str) -> None:
@@ -132,7 +132,7 @@ class EffortlessDB:
             This method is called internally during initialization and when the storage changes.
         """
         data = self._read_db()
-        if "v" not in data["headers"]:
+        if "version" not in data["headers"]:
             self.config = EffortlessConfig()
             data["headers"] = self.config.to_dict()
             self._write_db(data)
@@ -149,7 +149,7 @@ class EffortlessDB:
         Note:
             This method is called internally after operations that might change the configuration.
         """
-        self.config = EffortlessConfig(self._read_db()["headers"])
+        self.config = EffortlessConfig.from_dict(self._read_db()["headers"])
 
     def configure(self, new_config: EffortlessConfig) -> None:
         """
@@ -229,7 +229,7 @@ class EffortlessDB:
         if not isinstance(entry, dict):
             raise TypeError("Entry must be a dictionary")
 
-        for field in self.config.requires:
+        for field in self.config.required_fields:
             if field not in entry:
                 raise ValueError(
                     f"Field '{field}' is configured to be required in this database"
@@ -302,10 +302,10 @@ class EffortlessDB:
             headers = data["headers"]
             content = data["content"]
 
-            if headers.get("cmp"):
+            if headers.get("compressed"):
                 content = self._decompress_data(content)
 
-            if headers.get("enc"):
+            if headers.get("encrypted"):
                 content = self._decrypt_data(
                     content if isinstance(content, str) else json.dumps(content)
                 )
@@ -341,10 +341,10 @@ class EffortlessDB:
             headers = data["headers"]
             content = data["content"]
 
-            if headers.get("enc"):
+            if headers.get("encrypted"):
                 content = self._encrypt_data(content)
 
-            if headers.get("cmp"):
+            if headers.get("compressed"):
                 content = self._compress_data(json.dumps(content))
 
             final_data = json.dumps(
@@ -370,7 +370,10 @@ class EffortlessDB:
             Backups are performed in a separate thread to avoid blocking the main operation.
         """
         self._operation_count += 1
-        if self.config.backup and self._operation_count >= self.config.backup_interval:
+        if (
+            self.config.backup_path
+            and self._operation_count >= self.config.backup_interval
+        ):
             self._operation_count = 0
 
             # If a backup thread is already running, we can stop it
@@ -412,18 +415,17 @@ class EffortlessDB:
         Note:
             If the backup fails, an error is logged but no exception is raised to the caller.
         """
-        if self.config.backup:
+        if self.config.backup_path:
             try:
-                # Check if backup directory is valid
-                if not os.path.exists(self.config.backup) or not os.access(
-                    self.config.backup, os.W_OK
+                if not os.path.exists(self.config.backup_path) or not os.access(
+                    self.config.backup_path, os.W_OK
                 ):
                     raise IOError(
-                        f"Backup directory {self.config.backup} is not writable or does not exist."
+                        f"Backup directory {self.config.backup_path} is not writable or does not exist."
                     )
 
                 backup_path = os.path.join(
-                    self.config.backup, os.path.basename(self._storage_file)
+                    self.config.backup_path, os.path.basename(self._storage_file)
                 )
                 shutil.copy2(self._storage_file, backup_path)
                 logger.debug(f"Database backed up to {backup_path}")
