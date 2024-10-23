@@ -2,7 +2,7 @@
 import json
 import os
 import logging
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional, Union
 import zlib
 import base64
 import threading
@@ -306,7 +306,9 @@ class EffortlessDB:
                 content = self._decompress_data(content)
 
             if headers.get("enc"):
-                content = self._decrypt_data(content if isinstance(content, str) else json.dumps(content))
+                content = self._decrypt_data(
+                    content if isinstance(content, str) else json.dumps(content)
+                )
 
             return {"headers": headers, "content": content}
         except (IOError, json.JSONDecodeError) as e:
@@ -338,10 +340,10 @@ class EffortlessDB:
 
             headers = data["headers"]
             content = data["content"]
-            
+
             if headers.get("enc"):
                 content = self._encrypt_data(content)
-            
+
             if headers.get("cmp"):
                 content = self._compress_data(json.dumps(content))
 
@@ -381,7 +383,7 @@ class EffortlessDB:
             self._backup_thread = threading.Thread(target=self._backup)
             self._backup_thread.start()
 
-    def finish_backup(self, timeout: float | None = None) -> bool:
+    def finish_backup(self, timeout: Optional[float] = None) -> bool:
         """
         Wait for any ongoing backup operation to complete.
 
@@ -429,7 +431,7 @@ class EffortlessDB:
             except IOError as e:
                 logger.error(f"Backup failed: {str(e)}")
                 return False  # Indicate failure
-            
+
         return False
 
     def _compress_data(self, data: Union[str, Dict[str, Any]]) -> str:
