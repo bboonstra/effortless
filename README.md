@@ -1,4 +1,4 @@
-# Databases should be _Effortless_.
+# Databases should be [_Effortless_](https://bboonstra.github.io/Effortless).
 
 [![Publish Package](https://github.com/bboonstra/Effortless/actions/workflows/publish.yml/badge.svg?branch=main)](https://github.com/bboonstra/Effortless/actions/workflows/publish.yml)
 [![Run Tests](https://github.com/bboonstra/Effortless/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/bboonstra/Effortless/actions/workflows/test.yml)
