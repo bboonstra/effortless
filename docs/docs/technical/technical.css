@@ -39,7 +39,6 @@
 .property,
 .method {
     margin: 0px;
-    background-color: rgba(255, 255, 255, 0.05);
     border-radius: 8px;
     padding: 1rem;
     margin-bottom: 1.5rem;
@@ -64,7 +63,7 @@
 
 .property,
 .method {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: color-mix(in srgb, var(--background-color) 95%, rgba(5, 0, 97, 0.837)) !important;
     border-radius: 8px;
     padding: 1rem;
     margin-bottom: 0;

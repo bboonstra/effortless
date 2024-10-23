@@ -336,6 +336,20 @@ main {
     border-left-color: var(--effortless-gray);
 }
 
+.tab-highlight.tab-forward::after {
+    border-left: 8px solid var(--hover-color);
+}
+.tab-highlight.tab-back::before {
+    border-right: 8px solid var(--hover-color);
+}
+
+.tab-highlight.tab-forward:hover::after {
+    border-left: 8px solid var(--primary-color);
+}
+.tab-highlight.tab-back:hover::before {
+    border-right: 8px solid var(--primary-color);
+}
+
 .button-container {
     display: flex;
     flex-wrap: wrap;
@@ -355,13 +369,6 @@ main {
 
 .button-container:not(:first-of-type) {
     margin-top: 10px;
-}
-
-.tab-highlight {
-    background-color: var(--hover-color);
-}
-.tab-highlight:hover {
-    background-color: var(--effortless-blue);
 }
 
 .titled-container {

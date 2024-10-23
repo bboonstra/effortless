@@ -15,7 +15,7 @@ document.addEventListener("templateConstructed", function () {
             } else {
                 section.style.backgroundColor = "transparent";
                 section.style.background =
-                    "linear-gradient(90deg, var(--effortless-blue), var(--effortless-green))";
+                    "linear-gradient(135deg, var(--effortless-blue), var(--effortless-green))";
             }
         });
     }
