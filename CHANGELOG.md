@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2024-10-22
+
+### Added
+
+- Database versioning is now synced with the project version
+- Databases on old versions will now automatically migrate to the version of Effortless
+- New configuration applications will now fail to apply if their required fields or max_size do not match the current database
+- Added search() to filter for a single value
+
+### Changed
+
+- EffortlessConfig now takes keyword parameters instead of a dictioniary
+  - Use from_dict if you need the old functionality
+
+### Docs
+
+- TODO
+  
 ## [1.2.0.1] - 2024-10-22
 
 ### Added

@@ -302,7 +302,7 @@ class TestFilter(unittest.TestCase):
         )
 
 
-class TestAdvancedSearch(unittest.TestCase):
+class TestAdvancedFilter(unittest.TestCase):
     def setUp(self):
         self.db = EffortlessDB()
         self.db.wipe()
@@ -514,15 +514,11 @@ class TestAdvancedSearch(unittest.TestCase):
     def test_between_dates_with_invalid_unix_timestamps(self):
         # Test with negative Unix timestamp
         with self.assertRaises(ValueError):
-            self.db.filter(
-                Field("registration_date").between_dates(-1, time.time())
-            )
+            self.db.filter(Field("registration_date").between_dates(-1, time.time()))
 
         # Test with Unix timestamp that's too large
         with self.assertRaises(ValueError):
-            self.db.filter(
-                Field("registration_date").between_dates(2**63, time.time())
-            )
+            self.db.filter(Field("registration_date").between_dates(2**63, time.time()))
 
         # Test with invalid Unix timestamp (string that's not a valid float)
         with self.assertRaises(ValueError):
@@ -538,7 +534,7 @@ class TestAdvancedSearch(unittest.TestCase):
         self.assertEqual(len(result), 0)  # Should be no matches
 
 
-class TestAdvancedSearchErrors(unittest.TestCase):
+class TestAdvancedFilterErrors(unittest.TestCase):
     def setUp(self):
         self.db = EffortlessDB()
         self.db.wipe()
@@ -920,6 +916,86 @@ class TestIsType(unittest.TestCase):
     def test_is_type_no_matches(self):
         result = self.db.filter(Field("name").is_type(int))
         self.assertEqual(len(result), 0)
+
+
+class TestSearch(unittest.TestCase):
+    def setUp(self):
+        self.db = EffortlessDB()
+        self.db.wipe()
+        self.db.add(
+            {
+                "id": 1,
+                "name": "Alice",
+                "age": 30,
+                "skills": ["Python", "JavaScript"],
+                "address": {"city": "New York", "country": "USA"},
+            }
+        )
+        self.db.add(
+            {
+                "id": 2,
+                "name": "Bob",
+                "age": 25,
+                "skills": ["Java", "C++"],
+                "address": {"city": "London", "country": "UK"},
+            }
+        )
+        self.db.add(
+            {
+                "id": 3,
+                "name": "Charlie",
+                "age": 35,
+                "skills": ["Python", "Ruby"],
+                "address": {"city": "San Francisco", "country": "USA"},
+            }
+        )
+
+    def test_search_single_result(self):
+        result = self.db.search(Field("name").equals("Alice"))
+        self.assertIsNotNone(result)
+        self.assertEqual(result["name"], "Alice")  # type: ignore
+
+    def test_search_no_result(self):
+        result = self.db.search(Field("name").equals("David"))
+        self.assertIsNone(result)
+
+    def test_search_multiple_results(self):
+        with self.assertRaises(ValueError):
+            self.db.search(Field("age").greater_than(20))
+
+    def test_search_complex_query(self):
+        result = self.db.search(
+            Field("age").greater_than(30) & Field("address.country").equals("USA")
+        )
+        self.assertIsNotNone(result)
+        self.assertEqual(result["name"], "Charlie")  # type: ignore
+
+    def test_search_nested_field(self):
+        result = self.db.search(Field("address.city").equals("London"))
+        self.assertIsNotNone(result)
+        self.assertEqual(result["name"], "Bob")  # type: ignore
+
+    def test_search_with_list_field(self):
+        result = self.db.search(Field("skills").contains("Java"))
+        self.assertIsNotNone(result)
+        self.assertEqual(result["name"], "Bob")  # type: ignore
+
+    def test_search_with_numeric_comparison(self):
+        result = self.db.search(Field("age").less_than(26))
+        self.assertIsNotNone(result)
+        self.assertEqual(result["name"], "Bob")  # type: ignore
+
+    def test_search_with_regex(self):
+        result = self.db.search(Field("name").matches_regex(r"^A.*"))
+        self.assertIsNotNone(result)
+        self.assertEqual(result["name"], "Alice")  # type: ignore
+
+    def test_search_with_fuzzy_match(self):
+        result = self.db.search(Field("name").fuzzy_match("Allice", threshold=0.8))
+        self.assertIsNotNone(result)
+        self.assertEqual(result["name"], "Alice")  # type: ignore
+
+        self.assertEqual(result["name"], "Alice")  # type: ignore
 
 
 if __name__ == "__main__":
