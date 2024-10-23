@@ -171,7 +171,7 @@ class TestConfiguration(unittest.TestCase):
         )
 
         # Clean up the backup directory
-        shutil.rmtree(backup_path)
+        shutil.rmtree(backup_path, ignore_errors=True)
 
 
 if __name__ == "__main__":

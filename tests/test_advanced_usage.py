@@ -216,7 +216,7 @@ class TestAdvancedUsage(unittest.TestCase):
             "Backup file should contain the correct data",
         )
 
-        shutil.rmtree(backup_dir)
+        shutil.rmtree(backup_dir, ignore_errors=True)
 
 
 if __name__ == "__main__":
