@@ -5,6 +5,7 @@ document.addEventListener("templateConstructed", function () {
     let currentSection = 0;
     let isScrolling = false;
     let scrollTimer = null;
+    let hasScrolled = localStorage.getItem("hasScrolled") === "true";
 
     function updateSectionColors() {
         sections.forEach((section, index) => {
@@ -42,6 +43,12 @@ document.addEventListener("templateConstructed", function () {
             "show",
             currentSection < sections.length - 1
         );
+
+        // Add or remove the glow effect on the down arrow only if user hasn't scrolled before
+        downArrow.classList.toggle(
+            "glow",
+            currentSection === 0 && !hasScrolled
+        );
     }
 
     function scrollToSection(index) {
@@ -55,6 +62,11 @@ document.addEventListener("templateConstructed", function () {
             updateArrowVisibility();
             updateArrowColors();
         }, 750);
+
+        if (!hasScrolled) {
+            hasScrolled = true;
+            localStorage.setItem("hasScrolled", "true");
+        }
     }
 
     function handleScroll(direction) {

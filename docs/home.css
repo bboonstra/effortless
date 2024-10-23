@@ -16,7 +16,14 @@ body {
 
 .section * {
     max-width: 80%;
-    min-width: 300px;
+}
+
+.section .button-container {
+    max-width: 80%;
+}
+
+.section h1 {
+    margin: 0 auto;
 }
 
 .section h2 {
@@ -55,23 +62,29 @@ body {
 }
 
 .cta-button:hover {
-    background-color: color-mix(in srgb, var(--hover-color) 80%, var(--effortless-white));
+    background-color: color-mix(
+        in srgb,
+        var(--hover-color) 80%,
+        var(--effortless-white)
+    );
 }
 
 .arrow {
-    font-size: 2rem;
+    font-size: 2.5rem;
     color: var(--primary-color);
     cursor: pointer;
     position: fixed;
     z-index: 5;
     opacity: 0;
-    transition: opacity 0.3s ease, color 0.3s ease;
+    transition: all 0.3s ease;
 }
+
 .up-arrow {
     top: 90px;
     left: 50%;
     transform: translateX(-50%);
 }
+
 .down-arrow {
     bottom: 20px;
     left: 50%;
@@ -80,4 +93,22 @@ body {
 
 .show {
     opacity: 1;
+}
+
+@keyframes glowPulse {
+    0%, 100% {
+        color: var(--primary-color);
+        text-shadow: none;
+    }
+    50% {
+        color: var(--tertiary-color);
+        text-shadow: 0 0 3px var(--tertiary-color),
+            0 0 5px var(--tertiary-color),
+            0 0 10px var(--tertiary-color),
+            0 0 15px var(--tertiary-color);
+    }
+}
+
+.glow {
+    animation: glowPulse 3s infinite cubic-bezier(0.4, 0, 0.2, 1);
 }
