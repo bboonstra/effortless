@@ -115,7 +115,7 @@ class TestConfiguration(unittest.TestCase):
             debug=True,
             required_fields=["name"],
             max_size=100,
-            version="0.0.0",
+            version="1.2.0",
         )
         first_db = EffortlessDB("first_db")
         first_db.configure(new_config)

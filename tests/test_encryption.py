@@ -27,21 +27,21 @@ class TestEncryption(unittest.TestCase):
             self.db.encryption_key, "test_key", "Encryption key should be set correctly"
         )
 
-        self.db.encryption_key = None
+        self.db.unencrypt()
         self.assertIsNone(self.db.encryption_key, "Encryption key should be unset")
 
     def test_set_encryption_key(self):
         with self.assertRaises(TypeError, msg="Non-string key should raise TypeError"):
-            self.db.set_encryption_key(123)  # type: ignore
+            self.db.encrypt(123)  # type: ignore
 
-        self.db.set_encryption_key("test_key")
+        self.db.encrypt("test_key")
         self.assertEqual(
             self.db._encryption_key,
             "test_key",
             "Encryption key should be set correctly",
         )
 
-        self.db.set_encryption_key(None)
+        self.db.unencrypt()
         self.assertIsNone(self.db._encryption_key, "Encryption key should be unset")
 
     def test_encrypt_decrypt_data(self):
@@ -99,7 +99,7 @@ class TestEncryption(unittest.TestCase):
 
     def test_encryption_workflow(self):
         # Configure encryption
-        self.db.set_encryption_key("initial_key")
+        self.db.encrypt("initial_key")
         self.db.configure(EffortlessConfig(encrypted=True))
 
         # Add data
@@ -121,7 +121,7 @@ class TestEncryption(unittest.TestCase):
         )
 
         # Change encryption key
-        self.db.set_encryption_key("new_key")
+        self.db.encrypt("new_key")
 
         # Verify data can still be retrieved with new key
         data = self.db.get_all()
@@ -138,7 +138,7 @@ class TestEncryption(unittest.TestCase):
             db_using_old_key.get_all()
 
     def test_encryption_with_compression(self):
-        self.db.set_encryption_key("test_key")
+        self.db.encrypt("test_key")
         self.db.configure(EffortlessConfig(encrypted=True, compressed=True))
 
         large_data = {"large": "x" * 1000}
@@ -159,12 +159,12 @@ class TestEncryption(unittest.TestCase):
         )
 
     def test_encryption_key_change(self):
-        self.db.set_encryption_key("initial_key")
+        self.db.encrypt("initial_key")
         self.db.configure(EffortlessConfig(encrypted=True))
         self.db.add({"test": "data"})
 
         # Change the encryption key
-        self.db.set_encryption_key("new_key")
+        self.db.encrypt("new_key")
 
         # Verify data can be accessed with the new key
         data = self.db.get_all()
@@ -195,7 +195,7 @@ class TestEncryption(unittest.TestCase):
         )
 
     def test_encryption_key_persistence(self):
-        self.db.set_encryption_key("persistent_key")
+        self.db.encrypt("persistent_key")
         self.db.configure(EffortlessConfig(encrypted=True))
         self.db.add({"test": "persistent_data"})
 

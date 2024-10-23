@@ -28,12 +28,13 @@ class EffortlessDB:
 
         """
         self._config = EffortlessConfig()
+        self._encryption_key = None
+        if encryption_key:
+            self.encrypt(encryption_key)
         self.set_storage(db_name)
         self._autoconfigure()
         self._operation_count = 0
         self._backup_thread = None
-        self._encryption_key = None
-        self.set_encryption_key(encryption_key)
 
     @property
     def config(self):
@@ -60,7 +61,7 @@ class EffortlessDB:
         return self._encryption_key
 
     @encryption_key.setter
-    def encryption_key(self, new_key: Optional[str]):
+    def encryption_key(self, new_key: str):
         """
         Set a new encryption key.
 
@@ -69,9 +70,9 @@ class EffortlessDB:
         Args:
             new_key (Optional[str]): The new encryption key to set.
         """
-        self.set_encryption_key(new_key)
+        self.encrypt(new_key)
 
-    def set_encryption_key(self, new_key: Optional[str]) -> None:
+    def encrypt(self, new_key: str) -> None:
         """
         Set a new encryption key and re-encrypt the database if necessary.
 
@@ -79,15 +80,12 @@ class EffortlessDB:
         with both the old and new keys, then re-encrypt with the new key.
 
         Args:
-            new_key (Optional[str]): The new encryption key to set.
+            new_key (str): The new encryption key to set.
 
         Raises:
             TypeError: If the new key is not a string (when not None).
             ValueError: If unable to decrypt the database with either the old or new key.
         """
-        if new_key is None:
-            self._encryption_key = None
-            return
 
         if not isinstance(new_key, str):
             raise TypeError("Encryption key must be a string")
@@ -230,12 +228,16 @@ class EffortlessDB:
 
     def _migrate(self):
         data = self._read_db()
-        previous_data = EffortlessConfig.from_dict(data["headers"])
-        # TODO
-        new_data = previous_data
-        new_data.version = EffortlessConfig.CURRENT_VERSION
-        data["headers"] = new_data.to_dict()
-        self._write_db(data)
+        config = EffortlessConfig.from_dict(data.get("headers", {}))
+        if config.version == EffortlessConfig.CURRENT_VERSION:
+            pass
+        elif config.version.startswith("1.2"):
+            content = data["content"]
+        else:
+            content = data["1"]
+        config.version = EffortlessConfig.CURRENT_VERSION
+        new_data = {"headers": config.to_dict(), "content": content}
+        self._write_db(new_data)
 
     def _update_config(self):
         """
@@ -769,6 +771,54 @@ class EffortlessDB:
 
         return matching_entries[0]
 
+    def unencrypt(self) -> None:
+        """
+        Permanently unencrypt the database using the key if it's currently encrypted.
 
-db = EffortlessDB()
+        Raises:
+            ValueError: If no encryption key is set.
+        """
+        data = self._read_db()
+        if not data["headers"]["encrypted"]:
+            self._encryption_key = None
+            return
+        if self._encryption_key is None:
+            raise ValueError("No encryption key set")
 
+        self.config.encrypted = False
+        data["headers"]["encrypted"] = False
+        self._write_db(data)
+        self._encryption_key = None
+        logger.info("Database unencrypted successfully")
+
+
+class DocumentationDB(EffortlessDB):
+    def __init__(self):
+        super().__init__("db")
+        self._config.encrypted = False
+
+    def encrypt(self, new_key: str) -> None:
+        raise NotImplementedError(
+            "The base db cannot be encrypted. Create an EffortlessDB(encryption_key) instead!"
+        )
+
+    @property
+    def encryption_key(self):
+        return None
+
+    @encryption_key.setter
+    def encryption_key(self, new_key: Optional[str]):
+        raise NotImplementedError(
+            "The base db cannot be encrypted. Create an EffortlessDB(encryption_key) instead!"
+        )
+
+    def _reencrypt_db(self, old_key: Optional[str], new_key: str) -> None:
+        raise NotImplementedError(
+            "The base db cannot be encrypted. Create an EffortlessDB(encryption_key) instead!"
+        )
+
+    def unencrypt(self) -> None:
+        pass
+
+
+db = DocumentationDB()

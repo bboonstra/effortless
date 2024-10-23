@@ -12,7 +12,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Database versioning is now synced with the project version
 - Databases on old versions will now automatically migrate to the version of Effortless
 - New configuration applications will now fail to apply if their required fields or max_size do not match the current database
-- Added search() to filter for a single value
+- You can now use search() to filter for a single value
+- Keyed encryption has been implemented and is now required for encrypted databases
+  - Pass in a key (password) into EffortlessDB() or use encrypt() to set the key
+  - This will automatically configure the DB to be encrypted
+  - To access the DB in the future, all EffortlessDB object must use that encryption key
+  - You can automatically change the key for the database file with set_encryption_key
+  - Use decrypt() to remove encryption
+- Implemented automatic migration for databases on versions less than current
 
 ### Changed
 
