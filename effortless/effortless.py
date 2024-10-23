@@ -25,11 +25,25 @@ class EffortlessDB:
             db_name (str, optional): The name of the database. Defaults to "db".
 
         """
-        self.config = EffortlessConfig()
+        self._config = EffortlessConfig()
         self.set_storage(db_name)
         self._autoconfigure()
         self._operation_count = 0
         self._backup_thread = None
+
+    @property
+    def config(self):
+        return self._config
+
+    @config.setter
+    def config(self, new_config: EffortlessConfig):
+        if not isinstance(new_config, EffortlessConfig):
+            raise TypeError("Config must be an EffortlessConfig object")
+        new_config.validate_db(self)
+        self._config = new_config
+        data = self._read_db()
+        data["headers"] = self._config.to_dict()
+        self._write_db(data)
 
     @staticmethod
     def default_db():
@@ -132,51 +146,48 @@ class EffortlessDB:
             This method is called internally during initialization and when the storage changes.
         """
         data = self._read_db()
-        if "version" not in data["headers"]:
-            self.config = EffortlessConfig()
-            data["headers"] = self.config.to_dict()
-            self._write_db(data)
+        current_config = EffortlessConfig.from_dict(data["headers"])
+
+        if current_config.version != EffortlessConfig.CURRENT_VERSION:
+            self._migrate()
+
         self._update_config()
+
+    def _migrate(self):
+        data = self._read_db()
+        previous_data = EffortlessConfig.from_dict(data["headers"])
+        # TODO
+        new_data = previous_data
+        new_data.version = EffortlessConfig.CURRENT_VERSION
+        data["headers"] = new_data.to_dict()
+        self._write_db(data)
 
     def _update_config(self):
         """
         Update the internal configuration object based on the database file.
-
-        This method reads the configuration from the database file and updates
-        the internal config object accordingly. It ensures that the in-memory
-        configuration always matches the one stored in the file.
-
-        Note:
-            This method is called internally after operations that might change the configuration.
         """
-        self.config = EffortlessConfig.from_dict(self._read_db()["headers"])
+        data = self._read_db()
+        try:
+            new_config = EffortlessConfig.from_dict(data["headers"])
+            new_config.validate_db(self)
+            self._config = new_config
+        except (ValueError, KeyError) as e:
+            logger.error(f"Invalid configuration in database file: {e}")
+            # Optionally, you could reset to a default configuration here
 
     def configure(self, new_config: EffortlessConfig) -> None:
         """
         Update the database configuration.
-
-        This method allows you to change the configuration of the database. It updates
-        both the in-memory configuration and the configuration stored in the file.
-
-        Args:
-            new_config (EffortlessConfig): The new configuration object to apply.
-
-        Raises:
-            TypeError: If new_config is not an EffortlessConfig object.
-
-        Note:
-            This method will write to the database file even if it's in read-only mode; read-only mode only protects against edits to the database's content.
         """
         if not isinstance(new_config, EffortlessConfig):
             raise TypeError("New configuration must be an EffortlessConfig object")
 
-        data = self._read_db()
-        self.config = new_config
-        content = data["content"]
+        new_config.validate_db(self)
 
-        data = {"headers": new_config.to_dict(), "content": content}
+        data = self._read_db()
+        data["headers"] = new_config.to_dict()
         self._write_db(data, write_in_readonly=True)
-        self._update_config()
+        self._config = new_config
 
     def get_all(self) -> List[Dict[str, Any]]:
         """
@@ -294,6 +305,10 @@ class EffortlessDB:
         """
         try:
             if not os.path.exists(self._storage_file):
+                self._write_db(
+                    {"headers": EffortlessConfig().to_dict(), "content": []},
+                    write_in_readonly=True,
+                )
                 return {"headers": EffortlessConfig().to_dict(), "content": []}
 
             with open(self._storage_file, "rb") as f:

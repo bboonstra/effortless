@@ -1,4 +1,5 @@
 from typing import Any, Dict, List, Optional
+import os
 
 
 class EffortlessConfig:
@@ -8,18 +9,20 @@ class EffortlessConfig:
     This class holds various configuration options for an EffortlessDB instance.
     """
 
+    CURRENT_VERSION: str = "1.3.0"
+
     def __init__(
         self,
         *,
         debug: bool = False,
         required_fields: List[str] = [],
         max_size: Optional[float] = None,
-        version: int = 1,
+        version: str = CURRENT_VERSION,
         backup_path: Optional[str] = None,
         backup_interval: int = 1,
         encrypted: bool = False,
         compressed: bool = False,
-        readonly: bool = False
+        readonly: bool = False,
     ):
         """
         Initialize an EffortlessConfig instance.
@@ -28,7 +31,7 @@ class EffortlessConfig:
             debug (bool): Enable debug mode. Defaults to False.
             required_fields (List[str]): List of required fields for each entry. Defaults to an empty list.
             max_size (Optional[int]): Maximum size of the database in MB. Defaults to None (no limit).
-            version (int): Version of the configuration. Always 1 for now.
+            version (str): Version of the configuration.
             backup_path (Optional[str]): Path to backup location. Defaults to None (no backup).
             backup_interval (int): Number of operations between backups. Defaults to 1.
             encrypted (bool): Whether the database should be encrypted. Defaults to False.
@@ -72,14 +75,14 @@ class EffortlessConfig:
         self._max_size = value
 
     @property
-    def version(self) -> int:
+    def version(self) -> str:
         return self._version
 
     @version.setter
-    def version(self, value: int) -> None:
-        if value != 1:
+    def version(self, value: str) -> None:
+        if len(value.split(".")) < 3:
             raise ValueError(
-                "v1 is the only version of EffortlessDB currently available."
+                f"Version specification must be a valid Effortless version, i.e. {EffortlessConfig.CURRENT_VERSION}"
             )
         self._version = value
 
@@ -187,3 +190,34 @@ class EffortlessConfig:
             Dict[str, Dict[str, Any]]: A dictionary containing default headers.
         """
         return {"headers": EffortlessConfig().to_dict()}
+
+    def validate_db(self, db) -> None:
+        """
+        Validate the database against the current configuration.
+
+        Args:
+            db (EffortlessDB): The database to validate.
+
+        Raises:
+            ValueError: If the database size exceeds max_size or if any entry is missing required fields.
+        """
+        # Check max_size
+        if self.max_size is not None:
+            current_size = os.path.getsize(db._storage_file) / (
+                1024 * 1024
+            )  # Size in MB
+            if current_size > self.max_size:
+                raise ValueError(
+                    f"Configuration rejected: database size ({current_size:.2f} MB) exceeds the new max size ({self.max_size} MB)"
+                )
+
+        # Check required fields
+        if self.required_fields:
+            for entry in db.get_all():
+                missing_fields = [
+                    field for field in self.required_fields if field not in entry
+                ]
+                if missing_fields:
+                    raise ValueError(
+                        f"Configuration rejected: the database is missing new required fields: {', '.join(missing_fields)}"
+                    )
