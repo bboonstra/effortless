@@ -26,7 +26,9 @@ setup(
         "Topic :: Software Development :: Libraries :: Application Frameworks",
     ],
     python_requires=">=3.9",
-    install_requires=[],
+    install_requires=[
+        "cryptography>=41.0.0",
+    ],
     keywords="database, effortless, simple storage, beginner, easy, db",
     project_urls={
         "Bug Tracker": "https://github.com/bboonstra/Effortless/issues",

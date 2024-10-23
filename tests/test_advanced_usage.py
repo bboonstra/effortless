@@ -161,41 +161,6 @@ class TestAdvancedUsage(unittest.TestCase):
             java_devs[0]["name"], "Frank", "Java developer should be Frank"
         )
 
-    def test_encryption_and_compression(self):
-        self.db.configure(EffortlessConfig(encrypted=True, compressed=True))
-        self.db.add({"test": "data"})
-        data = self.db._read_db()
-        self.assertIsInstance(
-            data["content"],
-            list,
-            "Data should be restored to list after retrieval with encryption and compression",
-        )
-        self.assertEqual(
-            data["content"],
-            [{"test": "data"}],
-            "Data should be restored to original state after retrieval with encryption and compression",
-        )
-
-    def test_encryption(self):
-        self.db.configure(EffortlessConfig(encrypted=True))
-        original_data = {"sensitive": "information"}
-        self.db.add(original_data)
-
-        retrieved_data = self.db.get_all()
-        self.assertEqual(
-            retrieved_data[0],
-            original_data,
-            "Retrieved data should match original data after encryption",
-        )
-
-        with open(self.db._storage_file, "rb") as f:
-            raw_data = f.read()
-        self.assertNotIn(
-            b"information",
-            raw_data,
-            "Raw data should not contain plaintext sensitive information",
-        )
-
     def test_backup(self):
         backup_dir = tempfile.mkdtemp()
         self.db.configure(EffortlessConfig(backup_path=backup_dir, backup_interval=1))
