@@ -23,63 +23,85 @@
             <h3 class="prop-header">Properties</h3>
             <div class="properties-container">
                 <div class="property">
-                    <h4 class="prop-subheader" prop-type="bool">debug</h4>
+                    <h4 class="prop-subheader" prop-type="list">requires</h4>
                     <p class="prop-description">
-                        Enable debug mode. Defaults to False.
+                        Require fields for each entry in the DB.
                     </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        config.requires = ["id"]
+                        db.configure(config)
+                        db.add({}) # Error: Field 'id' is required
+                    </div>
                 </div>
                 <div class="property">
-                    <h4 class="prop-subheader" prop-type="List[str]">requires</h4>
+                    <h4 class="prop-subheader" prop-type="string">backup</h4>
                     <p class="prop-description">
-                        List of required fields for each entry. Defaults to an empty
-                        list.
+                        Make the database automatically back up to the specified
+                        path.
                     </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        config.backup = "/folder/backups/"
+                        db.configure(config)
+                        db.add({"data": True})
+                        print(os.path.exists("/folder/backups/db.effortless"))
+                        True
+                    </div>
                 </div>
                 <div class="property">
-                    <h4 class="prop-subheader" prop-type="Optional[int]">
-                        max_size
+                    <h4 class="prop-subheader" prop-type="int">
+                        backup_interval
                     </h4>
                     <p class="prop-description">
-                        Maximum size of the database in MB. Defaults to None (no
-                        limit).
+                        Set the number of operations that occurs before each
+                        backup. Backups occur every after operation by default,
+                        but can be spaced out to improve performance.
                     </p>
                 </div>
                 <div class="property">
-                    <h4 class="prop-subheader" prop-type="int">v</h4>
+                    <h4 class="prop-subheader" prop-type="int">max_size</h4>
                     <p class="prop-description">
-                        Version of the configuration. Always 1 for now.
-                    </p>
-                </div>
-                <div class="property">
-                    <h4 class="prop-subheader" prop-type="Optional[str]">backup</h4>
-                    <p class="prop-description">
-                        Path to backup location. Defaults to None (no backup).
-                    </p>
-                </div>
-                <div class="property">
-                    <h4 class="prop-subheader" prop-type="int">backup_interval</h4>
-                    <p class="prop-description">
-                        Number of operations between backups. Defaults to 1.
-                    </p>
-                </div>
-                <div class="property">
-                    <h4 class="prop-subheader" prop-type="bool">encrypted</h4>
-                    <p class="prop-description">
-                        Whether the database should be encrypted. Defaults to False.
-                    </p>
-                </div>
-                <div class="property">
-                    <h4 class="prop-subheader" prop-type="bool">compressed</h4>
-                    <p class="prop-description">
-                        Whether the database should be compressed. Defaults to
-                        False.
+                        Set the maximum size of the database in MB. Any changes
+                        to the database that would make it exceed this size will
+                        fail. There is no limit by default.
                     </p>
                 </div>
                 <div class="property">
                     <h4 class="prop-subheader" prop-type="bool">readonly</h4>
                     <p class="prop-description">
-                        Whether the database is in read-only mode. Defaults to
-                        False.
+                        Set the database to read-only mode. In this mode, the
+                        entries of the database cannot be modified, but the
+                        configuration can be, so this change is revertable.
+                    </p>
+                </div>
+                <div class="property">
+                    <h4 class="prop-subheader" prop-type="bool">compressed</h4>
+                    <p class="prop-description">
+                        Set whether or not the database should be compressed.
+                        You may want to compress the database to conserve space,
+                        but it will take more time to read/write to it.
+                    </p>
+                </div>
+                <div class="property">
+                    <h4 class="prop-subheader" prop-type="bool">debug</h4>
+                    <p class="prop-description">
+                        Enable debug mode for verbose output. Defaults to False.
+                    </p>
+                </div>
+                <div class="property">
+                    <h4 class="prop-subheader" prop-type="bool">encrypted</h4>
+                    <p class="prop-description">
+                        Set whether or not the database should be encrypted or
+                        not. You will need to specify a key to encrypt and
+                        decrypt the database, but this feature is not
+                        implemented yet.
+                    </p>
+                </div>
+                <div class="property">
+                    <h4 class="prop-subheader" prop-type="v1">version</h4>
+                    <p class="prop-description">
+                        The internal version of the database.
                     </p>
                 </div>
             </div>
@@ -88,57 +110,31 @@
                 <div class="method">
                     <h4
                         class="method-subheader"
-                        method-parameters="config: Dict[str, Any] = {}"
+                        method-parameters="options: dict"
                     >
                         __init__
                     </h4>
                     <p class="method-description">
-                        Initializes an EffortlessConfig instance with the given
-                        configuration options.
-                    </p>
-                    <!-- prettier-ignore -->
-                    <div class="command python example-usage">
-                        config = EffortlessConfig({"debug": True, "max_size": 100})
-                    </div>
-                </div>
-                <div class="method">
-                    <h4 class="method-subheader" method-parameters="">_validate</h4>
-                    <p class="method-description">
-                        Validates the configuration values. Raises ValueError if any
-                        configuration value is invalid.
+                        Creates an EffortlessConfig with the given configuration
+                        options. EffortlessConfig creation will be changed in
+                        1.3.0.
                     </p>
                 </div>
                 <div class="method">
-                    <h4
-                        class="method-subheader"
-                        method-parameters=""
-                        method-returns="Dict[str, Any]"
-                    >
+                    <h4 class="method-subheader" method-returns="dict">
                         to_dict
                     </h4>
                     <p class="method-description">
-                        Converts the configuration to a dictionary representation.
+                        Converts the configuration to a dictionary
+                        representation. You can use this to edit a config before
+                        re-applying it.
                     </p>
                     <!-- prettier-ignore -->
                     <div class="command python example-usage">
                         config_dict = config.to_dict()
-                    </div>
-                </div>
-                <div class="method">
-                    <h4
-                        class="method-subheader"
-                        method-parameters=""
-                        method-returns="Dict[str, Dict[str, Any]]"
-                    >
-                        default_headers
-                    </h4>
-                    <p class="method-description">
-                        Creates a dictionary with default headers. Mainly used for
-                        internal unit testing.
-                    </p>
-                    <!-- prettier-ignore -->
-                    <div class="command python example-usage">
-                        default_headers = EffortlessConfig.default_headers()
+                        for opt in config_dict:
+                        ‎   ...
+                        config = EffortlessConfig(config_dict)
                     </div>
                 </div>
             </div>

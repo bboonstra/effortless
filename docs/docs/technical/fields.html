@@ -16,21 +16,251 @@
         <main>
             <h1 class="technical-title">Fields</h1>
             <p class="object-description">
-                This page is currently under construction. Check back soon for detailed information about Fields in EffortlessDB.
+                Fields in EffortlessDB are powerful tools for querying and
+                manipulating data. They allow you to specify conditions, sort
+                data, and perform various operations on your database entries.
             </p>
             <h3 class="prop-header">Properties</h3>
             <div class="properties-container">
-                <p>Properties information will be available soon.</p>
+                <div class="property">
+                    <h4 class="prop-subheader" prop-type="any">field</h4>
+                    <p class="prop-description">
+                        The field name or names to query. Can be a string for a
+                        single field, or a tuple/list for embedded fields.
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        db.add({"embedded": {"field": "data"}})
+                        db.filter(Field(("embedded", "field")).equals("data"))
+                        [{"embedded": {"field": "data"}}]
+                    </div>
+                </div>
+                <div class="property">
+                    <h4 class="prop-subheader" prop-type="callable">
+                        condition
+                    </h4>
+                    <p class="prop-description">
+                        A function that defines the condition for the entry. It
+                        is given the entry's data for the given key and returns
+                        if the entry passes. To set this, use a method defined
+                        below.
+                    </p>
+                </div>
             </div>
             <h2 class="method-header">Methods</h2>
             <div class="methods-container">
-                <p>Methods information will be available soon.</p>
+                <div class="method">
+                    <h4
+                        class="method-subheader"
+                        method-parameters="key: string"
+                    >
+                        __init__
+                    </h4>
+                    <p class="method-description">
+                        Creates a new Field object with the given key. This
+                        automatically creates the condition that the field must
+                        exist.
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        db.add({"test": "data"})
+                        has_age = Field("age")
+                        db.filter(has_age)
+                        []
+                    </div>
+                </div>
+                <div class="method">
+                    <h4 class="method-subheader" method-parameters="value: any">
+                        equals
+                    </h4>
+                    <p class="method-description">
+                        Creates a condition that the entry's field is equal to
+                        the given value.
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        named_alice = Field("name").equals("Alice")
+                    </div>
+                </div>
+                <div class="method">
+                    <h4 class="method-subheader" method-parameters="value: any">
+                        greater_than
+                    </h4>
+                    <p class="method-description">
+                        Creates a condition that the entry's field is greater
+                        than the given value.
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        senior_discount = Field("age").greater_than(65)
+                    </div>
+                </div>
+                <div class="method">
+                    <h4 class="method-subheader" method-parameters="value: any">
+                        less_than
+                    </h4>
+                    <p class="method-description">
+                        Creates a condition that the entry's field is less than
+                        the given value.
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        free_entry = Field("age").less_than(5)
+                    </div>
+                </div>
+                <div class="method">
+                    <h4
+                        class="method-subheader"
+                        method-parameters="value: any, case_sensitive: bool"
+                    >
+                        contains
+                    </h4>
+                    <p class="method-description">
+                        Creates a condition that checks if the field contains
+                        the given value. For strings, it checks if the value is
+                        a substring. For lists, it checks if the value is in the
+                        list. Case-sensitive by default.
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        python_skill = Field("skills").contains("Python")
+                    </div>
+                </div>
+                <div class="method">
+                    <h4
+                        class="method-subheader"
+                        method-parameters="value: string, case_sensitive: bool"
+                    >
+                        startswith
+                    </h4>
+                    <p class="method-description">
+                        Creates a condition that checks if the field starts with
+                        the given value. Case-sensitive by default.
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        starts_with_A_or_a = Field("name").startswith("A", case_sensitive=False)
+                    </div>
+                </div>
+                <div class="method">
+                    <h4
+                        class="method-subheader"
+                        method-parameters="value: string"
+                    >
+                        endswith
+                    </h4>
+                    <p class="method-description">
+                        Creates a condition that checks if the field ends with
+                        the given value.
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        lives_at_lane = Field(("address", "street")).endswith("ln")
+                    </div>
+                </div>
+                <div class="method">
+                    <h4
+                        class="method-subheader"
+                        method-parameters="pattern: string, flags: int"
+                    >
+                        matches_regex
+                    </h4>
+                    <p class="method-description">
+                        Creates a condition that checks if the field matches the
+                        given regex pattern and regex flags (if given).
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        valid_email = Field("email").matches_regex(r"[^@]+@[^@]+\.[^@]+")
+                    </div>
+                </div>
+                <div class="method">
+                    <h4
+                        class="method-subheader"
+                        method-parameters="start_date, end_date"
+                    >
+                        between_dates
+                    </h4>
+                    <p class="method-description">
+                        Creates a condition that checks if the field's date is
+                        between the given dates. Valid dates are either datetime
+                        objects or strings in the yyyy-mm-dd format. Unix
+                        timestamp support is coming soon!
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        summer_2023 = Field("date").between_dates("2023-06-21", "2023-09-22")
+                    </div>
+                </div>
+                <div class="method">
+                    <h4
+                        class="method-subheader"
+                        method-parameters="value: string, threshold: float"
+                    >
+                        fuzzy_match
+                    </h4>
+                    <p class="method-description">
+                        Creates a condition that checks if the field fuzzy
+                        matches the given value. Don't use this for exact
+                        filtering!
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        name_like_john = Field("name").fuzzy_match("John", threshold=0.7)
+                    </div>
+                </div>
+                <div class="method">
+                    <h4
+                        class="method-subheader"
+                        method-parameters="func: Callable"
+                    >
+                        passes
+                    </h4>
+                    <p class="method-description">
+                        Creates a condition that checks if the field passes the
+                        given lambda or function.
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        def is_even(number):
+                        ‎    return number % 2 == 0
+                        even_number = Field("number").passes(is_even)
+                        # Or,
+                        even_number = Field("number").passes(lambda x: x % 2 == 0)
+                    </div>
+                </div>
+                <div class="method">
+                    <h4
+                        class="method-subheader"
+                        method-parameters="expected_type: Type"
+                    >
+                        is_type
+                    </h4>
+                    <p class="method-description">
+                        Creates a condition that checks if the field is of the
+                        expected type.
+                    </p>
+                    <!-- prettier-ignore -->
+                    <div class="command python example-usage">
+                        is_string = Field("name").is_type(str)
+                    </div>
+                </div>
+            </div>
+            <p class="note">
+                <strong>Note:</strong> Fields in EffortlessDB are Queries with
+                field attributes under the hood. If you want to create a passes
+                condition that recieves the entire data of an entry, import and
+                create a Query and pass in a Callable that expects an entire
+                entry dict. You'll need to do input validation yourself.
+            </p>
+            <!-- prettier-ignore -->
+            <div class="command python example-usage">
+                multifield = Query(lambda entry: entry["field1"] + entry["field2"] == 7)
             </div>
             <div class="button-container">
                 <a href="config.html" class="tab tab-back">EffortlessConfig</a>
-                <a href="query.html" class="tab tab-forward">Query</a>
+                <a href="../index.html" class="tab tab-back">Docs Home</a>
             </div>
         </main>
     </body>
 </html>
-

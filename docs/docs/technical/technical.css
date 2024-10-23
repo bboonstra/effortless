@@ -4,6 +4,10 @@
     margin-bottom: 1.5rem;
 }
 
+.technical-title::before {
+    content: "Technical -> ";
+}
+
 .prop-header,
 .method-header {
     color: var(--text-color);
@@ -15,11 +19,13 @@
 .prop-subheader,
 .method-subheader {
     color: var(--primary-color);
-    font-size: 1.4rem;
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
     margin-top: 1.5rem;
     margin-bottom: 0.5rem;
     text-overflow: ellipsis;
-    width: fit-content;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .prop-description,
@@ -41,6 +47,10 @@
     border-left: 4px solid var(--tertiary-color);
     transition: all 0.3s ease;
     max-width: fit-content;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    height: auto;
 }
 
 .properties-container,
@@ -70,7 +80,7 @@
 
 .property > *:not(.example-usage),
 .method > *:not(.example-usage) {
-    flex: 1 0 auto;
+    flex: 0 0 auto;
     min-width: 0;
 }
 
@@ -88,6 +98,8 @@
 .formatted-attr {
     display: inline-block;
     font-size: 0.8em;
+    margin: 0px;
+    transform: translateY(-1.5px);
     margin-right: 10px;
     padding: 2px 5px;
     border-radius: 3px;
@@ -120,7 +132,7 @@
 
     .prop-subheader,
     .method-subheader {
-        font-size: 1.2rem;
+        font-size: clamp(1rem, 4vw, 1.5rem);
     }
 
     .property,
