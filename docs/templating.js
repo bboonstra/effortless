@@ -46,6 +46,16 @@ function updateTheme(theme) {
 document.addEventListener("templateConstructed", adjustLinks);
 
 document.addEventListener("DOMContentLoaded", function () {
+    // Add analytics script to head
+    const analyticsScript = document.createElement("script");
+    analyticsScript.defer = true;
+    analyticsScript.src = "https://cloud.umami.is/script.js";
+    analyticsScript.setAttribute(
+        "data-website-id",
+        "f1406dd2-9414-4623-8bf2-dae0b05b7ea1"
+    );
+    document.head.appendChild(analyticsScript);
+
     const navbar = `
         <nav>
             <button id="sidebarToggle">☰</button>

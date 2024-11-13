@@ -4,7 +4,6 @@ import re
 from datetime import datetime, timezone
 from difflib import SequenceMatcher
 
-
 class BaseQuery(ABC):
     """
     Abstract base class for all query types.

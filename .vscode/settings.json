@@ -3,5 +3,17 @@
     "python.testing.unittestArgs": ["-v", "-s", "./tests", "-p", "test_*.py"],
     "python.testing.autoTestDiscoverOnSaveEnabled": true,
     "liveServer.settings.root": "/docs",
-    "python.analysis.typeCheckingMode": "basic"
+    "python.analysis.typeCheckingMode": "basic",
+    "cSpell.language": "en,en-US,lorem",
+    "cSpell.enableFiletypes": [
+        "django-css",
+        "django-html",
+        "django-txt"
+    ],
+    "cSpell.words": [
+        "autoconfigure",
+        "effortlessdb",
+        "multifield",
+        "reencrypt"
+    ]
 }

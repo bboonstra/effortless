@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- EffortlessConfig now takes keyword parameters instead of a dictioniary
+- EffortlessConfig now takes keyword parameters instead of a dictionary
   - Use from_dict if you need the old functionality
 
 ## [1.2.0.1] - 2024-10-22
@@ -62,7 +62,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Notes
 
-- 1.2.0 is not compatible with databases from 1.1.1 or below. We hope that this is the last minor update that is not backwards-compatible; expect an automigrate feature to come soon.
+- 1.2.0 is not compatible with databases from 1.1.1 or below. We hope that this is the last minor update that is not backwards-compatible; expect an auto-migrate feature to come soon.
 
 ## [1.1.1] - 2024-10-21
 
