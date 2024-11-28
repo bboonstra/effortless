@@ -1,7 +1,7 @@
 # Databases should be [_Effortless_](https://bboonstra.dev/effortless/).
 
-[![Publish Package](https://github.com/bboonstra/Effortless/actions/workflows/publish.yml/badge.svg?branch=main)](https://github.com/bboonstra/Effortless/actions/workflows/publish.yml)
-[![Run Tests](https://github.com/bboonstra/Effortless/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/bboonstra/Effortless/actions/workflows/test.yml)
+[![Publish Package](https://github.com/bboonstra/effortless/actions/workflows/publish.yml/badge.svg?branch=main)](https://github.com/bboonstra/effortless/actions/workflows/publish.yml)
+[![Run Tests](https://github.com/bboonstra/effortless/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/bboonstra/effortless/actions/workflows/test.yml)
 
 Effortless has one objective: be the easiest database.
 It's perfect for beginners, but effortless for anyone.
@@ -16,15 +16,15 @@ You can install Effortless easily, if you have
 pip install effortless
 ```
 
-Check the [quickstart](https://bboonstra.github.io/Effortless/docs/quickstart.html) for more details.
+Check the [quickstart](https://bboonstra.dev/effortless/docs/quickstart.html) for more details.
 
 ## Usage
 
 We offer 3 tiers of effort when using our databases. If this is your first time
-using a database, try out the [Effortless](https://bboonstra.github.io/Effortless/docs/effortless-usage.html) usage below.
+using a database, try out the [Effortless](https://bboonstra.dev/effortless/docs/effortless-usage.html) usage below.
 If you are working on a simple project, you should take a look at the
-[Basic](https://bboonstra.github.io/Effortless/docs/basic-usage.html) usage docs.
-Overachievers may want to try our [Advanced](https://bboonstra.github.io/Effortless/docs/advanced-usage.html) features.
+[Basic](https://bboonstra.github.io/effortless/docs/basic-usage.html) usage docs.
+Overachievers may want to try our [Advanced](https://bboonstra.dev/effortless/docs/advanced-usage.html) features.
 
 ## Why Effortless?
 

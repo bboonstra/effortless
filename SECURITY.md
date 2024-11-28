@@ -15,4 +15,4 @@ If you find a vulnerability that does not put databases, data, or security at ri
 
 ### Severe Vulnerabilities
 
-If you find a severe vulnerability that puts databases, data, or security at risk, [report it confidentially](https://github.com/bboonstra/Effortless/security/advisories/new) or directly message a [maintainer](https://github.com/bboonstra) ASAP.
+If you find a severe vulnerability that puts databases, data, or security at risk, [report it confidentially](https://github.com/bboonstra/effortless/security/advisories/new) or directly message a [maintainer](https://github.com/bboonstra) ASAP.
