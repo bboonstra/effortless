@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.3.0] - 2024-10-23
 
+### Changed
+
+- Effortless now has a new home at [https://bboonstra.dev/effortless](https://bboonstra.dev/effortless)!
+
+## [1.3.0] - 2024-10-23
+
 ### Added
 
 - Database versioning is now synced with the project version

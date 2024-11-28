@@ -60,10 +60,10 @@ document.addEventListener("DOMContentLoaded", function () {
         <nav>
             <button id="sidebarToggle">☰</button>
             <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="/docs/">Docs</a></li>
+                <li><a href="/index.html">Home</a></li>
+                <li><a href="/docs/index.html">Docs</a></li>
                 <li><a href="https://pypi.org/project/Effortless/">PyPI</a></li>
-                <li><a href="https://github.com/bboonstra/Effortless">GitHub</a></li>
+                <li><a href="https://github.com/bboonstra/effortless">GitHub</a></li>
             </ul>
         </nav>
     `;
@@ -189,7 +189,7 @@ const isLocalhost =
     window.location.hostname === "127.0.0.1";
 
 function adjustLinks() {
-    const baseUrl = isLocalhost ? "" : "/Effortless";
+    const baseUrl = isLocalhost ? "" : "/effortless";
     var links = document.querySelectorAll("a");
     links.forEach((link) => {
         var href = link.getAttribute("href");
