@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     const changelogContainer = document.getElementById("changelog-content");
     const changelogUrl =
-        "https://raw.githubusercontent.com/bboonstra/Effortless/main/CHANGELOG.md";
+        "https://raw.githubusercontent.com/bboonstra/effortless/main/CHANGELOG.md";
 
     fetch(changelogUrl)
         .then((response) => response.text())
@@ -58,7 +58,7 @@ function updateChangelogIntro() {
     const paragraphs = document.querySelectorAll("#changelog-content p");
 
     if (paragraphs.length >= 1) {
-        paragraphs[0].innerHTML = `All notable changes to this project will be documented on this page, imported from <a href="https://github.com/bboonstra/Effortless/blob/main/CHANGELOG.md" target="_blank">GitHub</a>.`;
+        paragraphs[0].innerHTML = `All notable changes to this project will be documented on this page, imported from <a href="https://github.com/bboonstra/effortless/blob/main/CHANGELOG.md" target="_blank">GitHub</a>.`;
     }
 
     if (paragraphs.length >= 2) {
