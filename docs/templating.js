@@ -43,8 +43,6 @@ function updateTheme(theme) {
     }, 50);
 })();
 
-document.addEventListener("templateConstructed", adjustLinks);
-
 document.addEventListener("DOMContentLoaded", function () {
     // Add analytics script to head
     const analyticsScript = document.createElement("script");
@@ -187,15 +185,3 @@ document.addEventListener("DOMContentLoaded", function () {
 const isLocalhost =
     window.location.hostname === "localhost" ||
     window.location.hostname === "127.0.0.1";
-
-function adjustLinks() {
-    const baseUrl = isLocalhost ? "" : "/"; // this used to be "/effortless" but we moved to a subdomain
-    var links = document.querySelectorAll("a");
-    links.forEach((link) => {
-        var href = link.getAttribute("href");
-        if (href.startsWith("/") && !href.startsWith("//")) {
-            href = baseUrl + href;
-            link.setAttribute("href", href);
-        }
-    });
-}
