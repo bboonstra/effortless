@@ -189,7 +189,7 @@ const isLocalhost =
     window.location.hostname === "127.0.0.1";
 
 function adjustLinks() {
-    const baseUrl = isLocalhost ? "" : "/effortless";
+    const baseUrl = isLocalhost ? "" : "/"; // this used to be "/effortless" but we moved to a subdomain
     var links = document.querySelectorAll("a");
     links.forEach((link) => {
         var href = link.getAttribute("href");

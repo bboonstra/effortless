@@ -16,15 +16,15 @@ You can install Effortless easily, if you have
 pip install effortless
 ```
 
-Check the [quickstart](https://bboonstra.dev/effortless/docs/quickstart.html) for more details.
+Check the [quickstart](https://effortless.bboonstra.dev/docs/quickstart.html) for more details.
 
 ## Usage
 
 We offer 3 tiers of effort when using our databases. If this is your first time
-using a database, try out the [Effortless](https://bboonstra.dev/effortless/docs/effortless-usage.html) usage below.
+using a database, try out the [Effortless](https://effortless.bboonstra.dev/docs/effortless-usage.html) usage below.
 If you are working on a simple project, you should take a look at the
-[Basic](https://bboonstra.github.io/effortless/docs/basic-usage.html) usage docs.
-Overachievers may want to try our [Advanced](https://bboonstra.dev/effortless/docs/advanced-usage.html) features.
+[Basic](https://effortless.bboonstra.dev/docs/basic-usage.html) usage docs.
+Overachievers may want to try our [Advanced](https://effortless.bboonstra.dev/docs/advanced-usage.html) features.
 
 ## Why Effortless?
 

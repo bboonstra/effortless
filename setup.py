@@ -4,12 +4,12 @@ from setuptools import setup, find_packages
 
 setup(
     name="Effortless",
-    version="1.3.1",
+    version="1.3.2",
     packages=find_packages(),
     description="Databases should be Effortless.",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
-    url="https://bboonstra.dev/effortless/",
+    url="https://effortless.bboonstra.dev/",
     author="Ben Boonstra",
     author_email="ben@bboonstra.dev",
     license="MIT",
@@ -33,7 +33,7 @@ setup(
     keywords="database, effortless, simple storage, beginner, easy, db",
     project_urls={
         "Bug Tracker": "https://github.com/bboonstra/Effortless/issues",
-        "Documentation": "https://bboonstra.dev/effortless/",
+        "Documentation": "https://effortless.bboonstra.dev",
         "Source Code": "https://github.com/bboonstra/Effortless",
     },
     include_package_data=True,
