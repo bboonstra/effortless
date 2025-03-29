@@ -11,6 +11,7 @@ setup(
     long_description_content_type="text/markdown",
     url="https://bboonstra.dev/effortless/",
     author="Ben Boonstra",
+    author_email="ben@bboonstra.dev",
     license="MIT",
     classifiers=[
         "Programming Language :: Python :: 3",
